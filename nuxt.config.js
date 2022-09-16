@@ -24,8 +24,8 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    'assets/css/bootstrapOverride.scss',
-    'assets/css/main.scss'
+    /*'assets/css/bootstrapOverride.scss',
+    'assets/css/main.scss'*/
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -45,7 +45,7 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
-    ['nuxt-fontawesome', {
+    /*['nuxt-fontawesome', {
       imports: [
         {
           set: '@fortawesome/free-solid-svg-icons',
@@ -56,7 +56,7 @@ export default {
           icons: ['faGoogle', 'faFacebook']
         }
       ]
-    }]
+    }]*/
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
