@@ -1,8 +1,5 @@
 <template>
-  <div class="indexContainer">
-    <HeaderComponent />
-    <QuizComponent />
-  </div>
+  <QuizComponent />
 </template>
 
 <script lang="ts">

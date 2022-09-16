@@ -1,9 +1,5 @@
 <template>
-  <div>
-    <RegisterComponent />
-    <BackgroundWaveComponent />
-    <FooterComponent />
-  </div>
+  <RegisterComponent />
 </template>
 
 <script>
