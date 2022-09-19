@@ -49,14 +49,34 @@ export default {
       imports: [
         {
           set: '@fortawesome/free-solid-svg-icons',
-          icons: ['faChevronRight']
+          icons: ['faSquareFull']
         },
         {
           set: '@fortawesome/free-brands-svg-icons',
           icons: ['faGoogle', 'faFacebook']
         }
       ]
-    }]
+    }],
+    [
+      '@nuxtjs/firebase',
+      {
+        config: {
+          apiKey: 'AIzaSyAkXIA6YTU0YjoVfFobX9a28AgzP_4Sgmk',
+          authDomain: 'cybershit.firebaseapp.com',
+          projectId: 'cybershit',
+          storageBucket: 'cybershit.appspot.com',
+          messagingSenderId: '1055173805125',
+          appId: '1:1055173805125:web:62f9f4ba8b8f96e5bc4f2c',
+          measurementId: 'G-D349ZFL1EV'
+        },
+        services: {
+          auth: true,
+          storage: true,
+          database: true,
+          analytics: true
+        }
+      }
+    ]
   ],
   recaptcha: {
     hideBadge: true, // Hide badge element (v3 & v2 via size=invisible)
