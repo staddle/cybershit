@@ -49,14 +49,34 @@ export default {
       imports: [
         {
           set: '@fortawesome/free-solid-svg-icons',
-          icons: ['faChevronRight']
+          icons: ['faSquareFull']
         },
         {
           set: '@fortawesome/free-brands-svg-icons',
           icons: ['faGoogle', 'faFacebook']
         }
       ]
-    }]
+    }],
+    [
+      '@nuxtjs/firebase',
+      {
+        config: {
+          ***REMOVED***
+          ***REMOVED***
+          ***REMOVED***
+          ***REMOVED***
+          ***REMOVED***
+          ***REMOVED***
+          ***REMOVED***
+        },
+        services: {
+          auth: true,
+          storage: true,
+          database: true,
+          analytics: true
+        }
+      }
+    ]
   ],
   recaptcha: {
     hideBadge: true, // Hide badge element (v3 & v2 via size=invisible)
