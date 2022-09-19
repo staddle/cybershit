@@ -1,5 +1,5 @@
 <template>
-  <LoginComponent />
+  <AuthLoginComponent />
 </template>
 
 <script>

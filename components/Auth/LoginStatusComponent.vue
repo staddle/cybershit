@@ -4,7 +4,7 @@
       <img :src="user.avatar">
     </div>
     <div v-else>
-      <NuxtLink to="\login">
+      <NuxtLink to="/login">
         Login
       </NuxtLink>
     </div>
@@ -13,6 +13,7 @@
 
 <script>
 export default {
+  name: 'LoginStatusComponent',
   data () {
     return {
       signedIn: false,
