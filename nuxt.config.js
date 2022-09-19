@@ -24,8 +24,8 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    /*'assets/css/bootstrapOverride.scss',
-    'assets/css/main.scss'*/
+    /* 'assets/css/bootstrapOverride.scss',
+    'assets/css/main.scss' */
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -43,9 +43,9 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    // https://go.nuxtjs.dev/bootstrap
-    'bootstrap-vue/nuxt',
-    /*['nuxt-fontawesome', {
+    '@nuxtjs/recaptcha',
+    '@nuxtjs/tailwindcss',
+    ['nuxt-fontawesome', {
       imports: [
         {
           set: '@fortawesome/free-solid-svg-icons',
@@ -56,8 +56,14 @@ export default {
           icons: ['faGoogle', 'faFacebook']
         }
       ]
-    }]*/
+    }]
   ],
+  recaptcha: {
+    hideBadge: true, // Hide badge element (v3 & v2 via size=invisible)
+    mode: 'base', // Mode: 'base', 'enterprise'
+    siteKey: '6LcthQgiAAAAAOMeIqe7sRcEIImZXsSAS51MJ8fS', // Development Site key for requests
+    version: 3 // Version
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {

@@ -1,7 +1,7 @@
 <template>
   <nav class="nav navbar">
     <span>BrandName</span>
-    <LoginStatusComponent />
+    <AuthLoginStatusComponent />
   </nav>
 </template>
 

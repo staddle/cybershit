@@ -1,5 +1,5 @@
 <template>
-  <RegisterComponent />
+  <AuthRegisterComponent />
 </template>
 
 <script>
