@@ -25,18 +25,21 @@
         Available soon
       </div>
       <div>
-        <button class="bg-blue-600 text-white py-2 px-4 mr-2 hover:bg-blue-500 active:bg-blue-700 focus-visible:outline-none" @click="newsletterPopout=true">
+        <button class="bg-blue-600 text-white py-2 px-4 mr-2 hover:bg-blue-500 active:bg-blue-700 focus-visible:outline-none" @click="newsletterPopOut=true">
           Join the newsletter
         </button>
         <button class="bg-blue-100 py-2 px-4 hover:bg-sky-100 active:bg-blue-200 focus-visible:outline-none">
           Check out the code
         </button>
       </div>
-      <div>
-        <form class="grid grid-flow-row mt-8">
+      <div v-if="newsletterPopOut">
+        <div class="grid grid-flow-row mt-8" method="get">
           Enter your address to stay up-to-date:
-          <input type="text" name="email" placeholder="your@email.com" class="shadow-xl bg-blue-600 px-4 py-2 text-white placeholder:text-blue-300">
-        </form>
+          <input v-model="customerEmail" type="text" name="email" placeholder="your@email.com" class="shadow-xl bg-blue-600 px-4 py-2 text-white placeholder:text-blue-300">
+          <button class="bg-blue-600 text-white py-2 px-4 mr-2 hover:bg-blue-500 active:bg-blue-700 focus-visible:outline-none" @click="addNewsletter(customerEmail)">
+            Subscribe
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -48,12 +51,18 @@ import Vue from 'vue'
 export default Vue.extend({
   data () {
     return {
-      newsletterPopout: false
+      newsletterPopOut: false,
+      customerEmail: ''
     }
   },
   methods: {
-    async addNewsletter (email: string) {
-      //await this.$fire.database.ref('newsletter').push(email)
+    async addNewsletter (email : string) {
+      const dbRef = this.$fire.database.ref('newsletter')
+      const subscribeTime = new Date().toISOString()
+      await dbRef.push({
+        email,
+        date: subscribeTime
+      })
     }
   }
 })
