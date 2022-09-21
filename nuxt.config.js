@@ -35,6 +35,11 @@ export default {
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
+  pageTransition: {
+    name: 'page',
+    mode: 'out-in'
+  },
+
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     // https://go.nuxtjs.dev/typescript
@@ -72,7 +77,10 @@ export default {
         services: {
           auth: true,
           storage: true,
-          database: true,
+          database: {
+            emulatorPort: 9000,
+            emulatorHost: 'localhost'
+          },
           analytics: true
         }
       }
