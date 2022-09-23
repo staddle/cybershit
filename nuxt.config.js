@@ -7,14 +7,14 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'Cyber Shit',
+    title: 'Quiz App',
     htmlAttrs: {
       lang: 'en'
     },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      { hid: 'description', name: 'description', content: 'Create responsive quizzes for free with ease. No registration required.' },
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
@@ -54,7 +54,7 @@ export default {
       imports: [
         {
           set: '@fortawesome/free-solid-svg-icons',
-          icons: ['faSquareFull']
+          icons: ['faSquareFull', 'faAt']
         },
         {
           set: '@fortawesome/free-brands-svg-icons',
