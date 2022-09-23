@@ -25,10 +25,10 @@
         Available soon
       </div>
       <div class="flex flex-row justify-between">
-        <button class="bg-blue-600 text-white py-2 px-4 mr-2 w-full hover:bg-blue-500 active:bg-blue-700 focus-visible:outline-none" @click="newsletterPopOut=true">
+        <button class="bg-blue-600 rounded-full text-white py-2 px-4 mr-2 w-full hover:bg-blue-500 active:bg-blue-700 focus-visible:outline-none" @click="newsletterPopOut=true">
           Join the newsletter
         </button>
-        <button class="bg-blue-100 py-2 px-4 w-full hover:bg-sky-100 active:bg-blue-200 focus-visible:outline-none" @click="goToGithub()">
+        <button class="bg-blue-100rounded-full  py-2 px-4 w-full hover:bg-sky-100 active:bg-blue-200 focus-visible:outline-none" @click="goToGithub()">
           Check out the dev
         </button>
       </div>
