@@ -46,6 +46,7 @@ export default {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     '@nuxtjs/tailwindcss',
+    '@nuxtjs/recaptcha',
     [
       '@nuxtjs/firebase',
       {
@@ -57,14 +58,22 @@ export default {
           ***REMOVED***
           ***REMOVED***
           ***REMOVED***
+          ***REMOVED***
         },
         services: {
-          database: true
+          database: true,
+          analytics: true,
+          appCheck: true
         }
       }
     ]
   ],
-
+  recaptcha: {
+    hideBadge: false, // Hide badge element (v3 & v2 via size=invisible)
+    mode: 'base', // Mode: 'base', 'enterprise'
+    ***REMOVED***, // Development Site key for requests
+    version: 3 // Version
+  },
   purgeCSS: {
     whitelistPatterns: [/svg.*/, /fa.*/]
   },
