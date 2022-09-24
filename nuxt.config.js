@@ -26,10 +26,12 @@ export default {
   css: [
     /* 'assets/css/bootstrapOverride.scss',
     'assets/css/main.scss' */
+    '@fortawesome/fontawesome-svg-core/styles.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/plugins/fontawesome.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -44,14 +46,6 @@ export default {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     '@nuxtjs/tailwindcss',
-    ['nuxt-fontawesome', {
-      imports: [
-        {
-          set: '@fortawesome/free-solid-svg-icons',
-          icons: ['faSquareFull', 'faAt', 'faEnvelope', 'faUser']
-        }
-      ]
-    }],
     [
       '@nuxtjs/firebase',
       {
@@ -70,6 +64,10 @@ export default {
       }
     ]
   ],
+
+  purgeCSS: {
+    whitelistPatterns: [/svg.*/, /fa.*/]
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
