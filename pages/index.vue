@@ -1,5 +1,7 @@
 <template>
-  <LandingPageComponent />
+  <div>
+    <LandingPageComponent />
+  </div>
 </template>
 
 <script>
