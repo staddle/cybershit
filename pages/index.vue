@@ -1,14 +1,14 @@
 <template>
-  <div class="indexContainer">
-    <HeaderComponent />
-    <QuizComponent />
+  <div>
+    <LandingPageComponent />
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
 
 export default Vue.extend({
-  name: 'IndexPage'
+  name: 'IndexPage',
+  layout: 'none'
 })
 </script>
