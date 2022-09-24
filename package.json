@@ -12,26 +12,29 @@
     "lintfix": "npm run lint:js -- --fix"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.2.0",
     "@fortawesome/free-brands-svg-icons": "^6.2.0",
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
-    "bootstrap": "^4.6.1",
-    "bootstrap-vue": "^2.21.2",
-    "core-js": "^3.19.3",
-    "firebase": "^9.9.4",
+    "@fortawesome/vue-fontawesome": "^2.0.8",
+    "@nuxtjs/firebase": "^8.2.2",
+    "@nuxtjs/recaptcha": "^1.1.1",
+    "core-js": "^3.25.2",
+    "firebase": "^9.10.0",
     "nuxt": "^2.15.8",
     "vue": "^2.6.14",
-    "vue-server-renderer": "^2.6.14",
-    "vue-template-compiler": "^2.6.14",
+    "vue-server-renderer": "^2.7.10",
+    "vue-template-compiler": "^2.7.10",
     "webpack": "^4.46.0"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.16.3",
+    "@babel/eslint-parser": "^7.19.1",
     "@nuxt/types": "^2.15.8",
     "@nuxt/typescript-build": "^2.1.0",
-    "@nuxtjs/eslint-config-typescript": "^8.0.0",
-    "@nuxtjs/eslint-module": "^3.0.2",
-    "eslint": "^8.4.1",
-    "eslint-plugin-nuxt": "^3.1.0",
-    "eslint-plugin-vue": "^8.2.0"
+    "@nuxtjs/eslint-config-typescript": "^11.0.0",
+    "@nuxtjs/eslint-module": "^3.1.0",
+    "@nuxtjs/tailwindcss": "^5.3.3",
+    "eslint": "^8.24.0",
+    "eslint-plugin-nuxt": "^4.0.0",
+    "eslint-plugin-vue": "^9.5.1"
   }
 }
