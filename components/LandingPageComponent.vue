@@ -44,10 +44,10 @@
           </div>
           <div class="flex flex-row justify-between">
             <button class="bg-blue-600 rounded-lg text-white py-2 px-4 mr-2 w-full hover:bg-blue-500 active:bg-blue-700 focus-visible:outline-none" @click="newsletterPopOut=!newsletterPopOut">
-              <font-awesome-icon :icon="['fas', 'envelope']" class="mr-1" /> Newsletter
+              <FontAwesomeIcon :icon="['fas', 'envelope']" class="mr-1" /> Newsletter
             </button>
             <button class="bg-blue-100 rounded-lg  py-2 px-4 w-full hover:bg-sky-100 active:bg-blue-200 focus-visible:outline-none" @click="goToGithub()">
-              <font-awesome-icon :icon="['fas', 'user']" class="mr-1" /> Who am I?
+              <FontAwesomeIcon :icon="['fas', 'user']" class="mr-1" /> Who am I?
             </button>
           </div>
           <div v-if="newsletterPopOut">
@@ -58,7 +58,7 @@
               <label class="relative block mt-2 w-full">
                 <span class="sr-only">Email address</span>
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                  <font-awesome-icon :icon="['fas', 'at']" class="text-slate-300 ml-0 mr-auto flex-1" />
+                  <FontAwesomeIcon :icon="['fas', 'at']" class="text-slate-300 ml-0 mr-auto flex-1" />
                 </span>
                 <div class="flex flex-row justify-between">
                   <input
@@ -100,7 +100,7 @@ export default Vue.extend({
     try {
       await this.$fire.appCheck.activate('6LcpH_8hAAAAADtqaMfhMoDlujroU70KL2ixcDBa')
     } catch (e) {
-      console.error(e)
+      // console.error(e)
     }
   },
   methods: {

@@ -14,7 +14,6 @@ library.add(faEnvelope)
 library.add(faUser)
 
 // Register the component globally
-Vue.component('font-awesome-icon', FontAwesomeIcon)
+Vue.component('FontAwesomeIcon', FontAwesomeIcon)
 
 // Modify nuxt.config.js adding to the `css` and `plugins` sections.
-
