@@ -96,6 +96,13 @@ export default Vue.extend({
       customerEmail: ''
     }
   },
+  async mounted () {
+    try {
+      await this.$fire.appCheck.activate('6LcpH_8hAAAAADtqaMfhMoDlujroU70KL2ixcDBa')
+    } catch (e) {
+      console.error(e)
+    }
+  },
   methods: {
     async addNewsletter (email : string) {
       const dbRef = this.$fire.database.ref('newsletter')

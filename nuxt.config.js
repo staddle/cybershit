@@ -46,12 +46,14 @@ export default {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     '@nuxtjs/tailwindcss',
+    '@nuxtjs/recaptcha',
     [
       '@nuxtjs/firebase',
       {
         config: {
           apiKey: 'AIzaSyAkXIA6YTU0YjoVfFobX9a28AgzP_4Sgmk',
           authDomain: 'cybershit.firebaseapp.com',
+          databaseURL: 'https://cybershit-default-rtdb.europe-west1.firebasedatabase.app',
           projectId: 'cybershit',
           storageBucket: 'cybershit.appspot.com',
           messagingSenderId: '1055173805125',
@@ -59,12 +61,19 @@ export default {
           measurementId: 'G-D349ZFL1EV'
         },
         services: {
-          database: true
+          database: true,
+          analytics: true,
+          appCheck: true
         }
       }
     ]
   ],
-
+  recaptcha: {
+    hideBadge: false, // Hide badge element (v3 & v2 via size=invisible)
+    mode: 'base', // Mode: 'base', 'enterprise'
+    siteKey: '6LcpH_8hAAAAADtqaMfhMoDlujroU70KL2ixcDBa', // Development Site key for requests
+    version: 3 // Version
+  },
   purgeCSS: {
     whitelistPatterns: [/svg.*/, /fa.*/]
   },
