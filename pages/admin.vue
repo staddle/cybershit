@@ -1,6 +1,6 @@
 <template>
   <div>
-    <LeagueLandingPageComponent />
+    <LeagueAdminConsoleComponent />
   </div>
 </template>
 
@@ -8,7 +8,7 @@
 import Vue from 'vue'
 
 export default Vue.extend({
-  name: 'LeaguePage',
+  name: 'LeagueAdminPage',
   layout: 'none',
   async mounted () {
     try {
