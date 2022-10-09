@@ -1,5 +1,5 @@
 type Participant = {
-  id: number
+  id: string
   name: string
 }
 
@@ -14,13 +14,13 @@ type ChampionParticipant = {
 }
 
 type Match = {
-  id: number
+  id: string
   champions: ChampionParticipant[]
-  date: Date
+  date: Number
 }
 
 type Season = {
-  id: number
+  id: string
   name: string
   participants: Participant[]
   matches: Match[]

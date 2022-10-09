@@ -41,19 +41,17 @@ export default Vue.extend({
   },
   methods: {
     refreshSeasons () {
-      const dbRef = this.$fire.database.ref('lol/seasons')
-      dbRef.on('value', (snapshot) => {
-        this.seasons = snapshot.val()
-        if (this.seasons.length > 0) {
+      this.$database.getSeasons().then((seasons: Season[]) => {
+        this.seasons = seasons
+        if (this.seasons && this.seasons.length > 0) {
           this.selectedSeasonIndex = this.seasons[0].id.toString()
         }
       })
     },
     seasonAdded (newSeason : Season) {
-      const dbRef = this.$fire.database.ref('lol/seasons')
-      dbRef.push(newSeason).then(this.refreshSeasons).then(() => {
-        this.selectedSeasonIndex = newSeason.id.toString()
-      })
+      const newId = this.$database.addSeason(newSeason)
+      this.refreshSeasons()
+      this.selectedSeasonIndex = newId.toString()
     }
   }
 })
