@@ -31,7 +31,7 @@ export default Vue.extend({
       if (val === 'new') {
         this.selectedSeason = null
       } else {
-        const tempSeason = this.seasons.find((x : Season) => x.id === Number.parseInt(this.selectedSeasonIndex))
+        const tempSeason = this.seasons.find((x : Season) => x.id === this.selectedSeasonIndex)
         if (tempSeason) { this.selectedSeason = tempSeason } else { this.selectedSeason = null }
       }
     }
@@ -51,7 +51,7 @@ export default Vue.extend({
     seasonAdded (newSeason : Season) {
       const newId = this.$database.addSeason(newSeason)
       this.refreshSeasons()
-      this.selectedSeasonIndex = newId.toString()
+      this.selectedSeasonIndex = newId
     }
   }
 })
