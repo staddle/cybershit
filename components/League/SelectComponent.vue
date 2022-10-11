@@ -11,11 +11,11 @@
     <div v-if="selectedSeason != ''">
       <label for="match">Match:</label>
       <select id="match" v-model="selectedMatch">
-        <option v-for="match in matches" :key="match.id">
+        <option v-for="match in matches" :key="match.id" :value="match.id">
           {{ new Date(match.date).toLocaleDateString() }}
         </option>
       </select>
-      <button class="rounded-full bg-blue-600 text-white px-4 py-2" @click.prevent="addingMatch = true">
+      <button v-if="isMatchToday.length == 0" class="rounded-full bg-blue-600 text-white px-4 py-2" @click.prevent="addingMatch = true">
         Add Match for Today
       </button>
       <div v-if="addingMatch">
@@ -42,7 +42,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Champion, ChampionParticipant, Match, Participant, Season } from '~/model/Season'
+import { Champion } from '~/model/Champion'
+import { ChampionParticipant, Match, MatchState, Participant, Season } from '~/model/Season'
 
 export default Vue.extend({
   name: 'SelectComponent',
@@ -56,7 +57,7 @@ export default Vue.extend({
     return {
       selectedSeason: '',
       selectedParticipant: null as Participant | null,
-      selectedMatch: null as Match | null,
+      selectedMatch: '',
       playersForMatch: [] as Participant[],
       addingMatch: false
     }
@@ -70,23 +71,48 @@ export default Vue.extend({
     },
     matches (): Match[] {
       return this.selectedSeasonObject?.matches ?? []
+    },
+    isMatchToday (): Match[] {
+      return this.matches.filter((x: Match) => new Date(x.date).toDateString() === new Date().toDateString())
     }
   },
   watch: {
+    seasons (newSeasons: Season[]) {
+      if (newSeasons.length > 0) {
+        this.selectedSeason = newSeasons[0].id
+      }
+    },
     selectedSeason (newSeason) {
       if (newSeason) {
         this.$emit('season-selected', newSeason)
+        const matches = this.seasons.find((x: Season) => x.id === newSeason)?.matches
+        if (matches) {
+          if (matches.length === 0) {
+            this.addingMatch = true
+          } else if (matches.length === 1) {
+            this.selectedMatch = matches[0].id
+          } else if (this.isMatchToday.length > 0) {
+            this.selectedMatch = this.isMatchToday[0].id
+          } else {
+            this.selectedMatch = matches[0].id
+          }
+        }
       }
     },
     selectedParticipant (newParticipant) {
       if (newParticipant) {
-        this.$emit('participant-selected', newParticipant)
+        this.$emit('participant-selected', this.players.find((x: Participant) => x.name === newParticipant))
       }
     },
     selectedMatch (newMatch) {
       if (newMatch) {
         this.$emit('match-selected', newMatch)
       }
+    }
+  },
+  mounted () {
+    if (this.seasons.length === 1) {
+      this.selectedSeason = this.seasons[0].id
     }
   },
   methods: {
@@ -103,7 +129,8 @@ export default Vue.extend({
               participant: p
             } as ChampionParticipant
           }),
-          date: (Number)(new Date())
+          date: (Number)(new Date()),
+          state: MatchState.CREATED
         }
         this.$emit('match-added', newMatch)
         this.addingMatch = false

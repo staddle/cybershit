@@ -1,22 +1,35 @@
+import { Champion } from './Champion'
+
 type Participant = {
   id: string
   name: string
 }
 
-type Champion = {
-  id: number
-  name: string
+enum Role {
+  TOP,
+  JUNGLE,
+  MID,
+  BOT,
+  SUPPORT,
 }
 
 type ChampionParticipant = {
+  role: Role
   champion: Champion
   participant: Participant
+}
+
+enum MatchState {
+  CREATED,
+  ROLLED,
+  FINISHED
 }
 
 type Match = {
   id: string
   champions: ChampionParticipant[]
-  date: Number
+  date: number
+  state: MatchState
 }
 
 type Season = {
@@ -26,4 +39,4 @@ type Season = {
   matches: Match[]
 }
 
-export { Participant, Champion, ChampionParticipant, Match, Season }
+export { Participant, ChampionParticipant, Match, Season, MatchState, Role }

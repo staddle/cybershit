@@ -1,13 +1,20 @@
 <template>
   <div>
-    <img :src="icon(champ.name)" :alt="alt(champ.name)" :width="width" :height="height">
+    <img
+      :src="require(`~/assets/img/champion/${champ.id}.png`)"
+      :alt="`${champ.name} icon`"
+      :width="width"
+      :height="height"
+      :class="{'grayscale': notPlayable}"
+      @click.prevent="$emit('select-champion', champ.id)"
+      class="cursor-pointer hover:border hover:border-blue-600"
+    >
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 
-import { riotApi } from '~/model/RiotApi'
 import { Champion } from '~/model/Champion'
 
 export default Vue.extend({
@@ -17,6 +24,11 @@ export default Vue.extend({
       type: Object as () => Champion,
       required: true
     },
+    notPlayable: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     width: {
       type: String,
       default: '50px'
@@ -24,14 +36,6 @@ export default Vue.extend({
     height: {
       type: String,
       default: '50px'
-    }
-  },
-  methods: {
-    icon (name : string): string {
-      return riotApi().getChampionImage(name)
-    },
-    alt (name : string): string {
-      return `${name} icon`
     }
   }
 })
