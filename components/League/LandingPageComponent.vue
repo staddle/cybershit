@@ -1,12 +1,19 @@
 <template>
-  <div class="w-screen h-screen flex flex-col pt-8">
-    <div v-if="notification != ''" class="">
-      <span class="bg-blue-600 text-white">
+  <div class="w-screen h-screen flex flex-col">
+    <div v-if="notification != ''" class="fixed top-10 right-10 z-10">
+      <span class="bg-teal-600 text-white px-2 py-2 rounded-md hover:bg-teal-700 cursor-pointer" @click.prevent="notification = ''">
         {{ notification }}
-        <button class="border border-white px-2 my-1" @click.prevent="notification = ''">
-          x
+        <button class="x-2 my-1 text-sm ml-2 hover:text-slate-200" @click.prevent="notification = ''">
+          <FontAwesomeIcon :icon="['fas', 'x']" />
         </button>
       </span>
+    </div>
+    <div class="w-full flex justify-center py-4">
+      <div class="text-center pb-2 pr-2 font-bold text-5xl bg-gradient-to-r from-teal-600 to-violet-800 rounded-md hover:animate-spin cursor-default">
+        <div class="bg-slate-900 rounded-md w-full h-full m-1 text-teal-400">
+          FLEXERATOR
+        </div>
+      </div>
     </div>
     <div class="w-fit mx-auto">
       <LeagueSelectComponent
@@ -17,10 +24,9 @@
         @match-selected="(m) => setSelectedMatch(m)"
         @match-added="(m) => addMatch(m)"
         @participant-selected="(p) => selectedParticipant = p"
+        @notify="notify($event)"
       />
-      <div v-else>
-        Loading...
-      </div>
+      <LoadingComponent v-else />
     </div>
     <div v-if="createdState || rolledState" class="col-start-2">
       <LeagueRoleListComponent
@@ -106,8 +112,8 @@ export default Vue.extend({
     },
     addMatch (newMatch : Match) {
       if (this.selectedSeason) {
-        this.$database.addMatch(newMatch, this.selectedSeason.id)
-        this.refreshSeasons()
+        const newId = this.$database.addMatch(newMatch, this.selectedSeason.id)
+        this.setSelectedMatch(newId)
       }
     },
     rollRoles () {
