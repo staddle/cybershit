@@ -7,8 +7,8 @@
         <a :href="`https://lolalytics.com/lol/${participant.champion.id.toLowerCase()}/build/`">Builds</a>
       </span>
     </div>
-    <div v-else>
-      <span>?</span>
+    <div v-else class="text-violet-600 border border-violet-800 mx-auto w-8 h-8 rounded-md">
+      <FontAwesomeIcon icon="question" />
     </div>
   </div>
 </template>

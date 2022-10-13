@@ -87,7 +87,7 @@ export default Vue.extend({
   },
   computed: {
     players (): Participant[] {
-      return this.selectedSeasonObject?.matches.find(x => x.id === this.selectedMatch)?.champions.map(x => x.participant) ?? []
+      return this.selectedSeasonObject?.matches?.find(x => x.id === this.selectedMatch)?.champions.map(x => x.participant) ?? []
     },
     selectedSeasonObject (): Season | undefined {
       return this.seasons.find((x: Season) => x.id === this.selectedSeason)
