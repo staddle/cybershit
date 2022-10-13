@@ -3,14 +3,23 @@
     <div
       v-for="cp in participantsSortedByRole"
       :key="cp.participant.id"
-      class="flex flex-col"
+      class="flex flex-col mx-4"
       :class="{'text-black': cp.participant.id === ownParticipant.id,
                'text-slate-600': cp.participant.id !== ownParticipant.id}"
     >
       <span>
         {{ cp.participant.name }}
       </span>
-      <LeagueRoleComponent v-if="state" :role="cp.role" :is-own="cp.participant.id === ownParticipant.id" />
+      <LeagueRoleComponent
+        v-if="state"
+        :role="cp.role"
+        :is-own="cp.participant.id === ownParticipant.id"
+        :show-name="false"
+      />
+      <LeagueChampionDetail
+        :participant="cp"
+        :is-own="cp.participant.id === ownParticipant.id"
+      />
     </div>
   </div>
 </template>

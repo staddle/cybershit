@@ -26,12 +26,15 @@ export default {
   css: [
     /* 'assets/css/bootstrapOverride.scss',
     'assets/css/main.scss' */
+    // '~/assets/quasar/quasar.prod.css',
+    // '~/assets/quasar/google.css',
     '@fortawesome/fontawesome-svg-core/styles.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '~/plugins/fontawesome.js',
+    // '~/plugins/quasar.js',
     '~/plugins/database.ts'
   ],
 

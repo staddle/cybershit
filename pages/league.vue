@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-slate-900 text-white h-screen w-screen">
     <LeagueLandingPageComponent />
   </div>
 </template>

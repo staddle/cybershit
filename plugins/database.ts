@@ -1,10 +1,12 @@
 import { Plugin } from '@nuxt/types'
 import { ChampionParticipant, Match, MatchState, Participant, Role, Season } from '~/model/Season'
 import { Champion } from '~/model/Champion'
+import championRoles from '~/assets/championRoles'
 
 export interface Database {
   getSeasons: () => Promise<Season[]>,
   getSeason: (id: string) => Promise<Season>,
+  listenForSeason: (seasonId: string, callback: (season: Season) => void) => void,
   addSeason: (season: Season) => string,
   addMatch: (match: Match, selectedSeasonId: string) => void,
   getParticipants: () => Promise<Participant[]>,
@@ -14,6 +16,11 @@ export interface Database {
   getChampionList: () => Promise<Champion[]>,
   rollRoles: (seasonId: string, matchId: string) => Promise<Match>,
   selectChampion: (seasonId: string, matchId: string, participantId: string, champion: Champion) => Promise<Match>,
+}
+
+interface ChampionRole {
+  name: string
+  roles: Role[]
 }
 
 declare module 'vue/types/vue' {
@@ -47,14 +54,6 @@ const myPlugin : Plugin = ({ app }, inject) => {
     const snapshot = await app.$fire.database.ref('lol/seasons').get()
     if (snapshot.val()) {
       const mapped : Season[] = Object.values(snapshot.val())
-      /* .map((a : Season) => {
-        return {
-          id: a.id,
-          name: a.name,
-          participants: a.participants,
-          matches: a.matches
-        } as Season
-      }) */
       mapped.map((value: Season) => {
         value.matches = Object.values(value.matches)
         return value
@@ -62,6 +61,16 @@ const myPlugin : Plugin = ({ app }, inject) => {
       return mapped
     }
     return []
+  }
+
+  const listenForSeason = (seasonId: string, callback: (season: Season) => void) => {
+    app.$fire.database.ref(`lol/seasons/${seasonId}`).on('value', (snapshot) => {
+      if (snapshot.val()) {
+        const season : Season = snapshot.val()
+        season.matches = Object.values(season.matches)
+        callback(season)
+      }
+    })
   }
 
   const getSeason = async (id: string) : Promise<Season> => {
@@ -100,15 +109,27 @@ const myPlugin : Plugin = ({ app }, inject) => {
 
   const refreshChampions = async () : Promise<void> => {
     const championDataRef = app.$fire.database.ref('lol/champions').push()
+    const championRoles : ChampionRole[] = fetchChampionRoles()
     await fetch('http://ddragon.leagueoflegends.com/cdn/12.6.1/data/en_US/champion.json')
       .then(res => res.json())
-      .then(res => championDataRef.set(res.data))
+      .then((res) => {
+        const champions : Champion[] = Object.values(res.data)
+        champions.map((champion: Champion) => {
+          champion.roles = championRoles.find((role: ChampionRole) => role.name === champion.name)?.roles ?? []
+          return champion
+        })
+        const returnValue = Object.fromEntries(champions.map((c : Champion) => ([c.id, c])))
+        championDataRef.set(returnValue)
+      })
   }
+
+  type TempChamp = {name: string, champ: Champion}
 
   const getChampionList = async () : Promise<Champion[]> => {
     const snapshot = await app.$fire.database.ref('lol/champions').get()
     if (snapshot.val() != null) {
-      return Object.values(snapshot.val())[0] as Champion[]
+      const temp : TempChamp = Object.values(snapshot.val())[0] as TempChamp
+      return Object.values(temp) as Champion[]
     } else {
       await refreshChampions()
       return await getChampionList()
@@ -159,9 +180,58 @@ const myPlugin : Plugin = ({ app }, inject) => {
     return {} as Match
   }
 
+  const fetchChampionRoles = (): ChampionRole[] => {
+    return championRoles.map((x) => {
+      return {
+        name: x.name,
+        roles: x.roles.map((y) => {
+          switch (y) {
+            case 'top':
+              return Role.TOP
+            case 'jungle':
+              return Role.JUNGLE
+            case 'mid':
+              return Role.MID
+            case 'bot':
+              return Role.BOT
+            case 'support':
+              return Role.SUPPORT
+          }
+          return Role.TOP
+        })
+      } as ChampionRole
+    })
+    /* const result = await fetch('https://leagueoflegends.fandom.com/wiki/List_of_champions_by_draft_position')
+    const text = await result.text()
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(text, 'text/html')
+    return Object.values(doc.querySelectorAll('.article-table')[0]
+      .children[1].children)
+      .map((x) => {
+        const tableCols = Object.values(x.children)
+        const name = tableCols[0].attributes[0].value
+        const roles = {
+          top: tableCols[1].attributes.length > 0,
+          jungle: tableCols[2].attributes.length > 0,
+          mid: tableCols[3].attributes.length > 0,
+          bot: tableCols[4].attributes.length > 0,
+          support: tableCols[5].attributes.length > 0
+        }
+        return { name, roles } as ChampionRole
+      })
+
+      Object.values(document.querySelectorAll(".article-table")[0].children[1].children).map((x,i) => {
+        const tableCols = Object.values(x.children)
+        const name = tableCols[0].attributes[0].value
+        const roles = ['top', 'jungle', 'mid', 'bot', 'support']
+        return {name, roles: tableCols.filter((x,i)=>i>0&&i<6).map((x,i)=>x.attributes.length>0?roles[i]:0).filter(x=>x!=0)}
+      })  */
+  }
+
   inject('database', {
     getSeasons,
     getSeason,
+    listenForSeason,
     addSeason,
     addMatch,
     getParticipants,
