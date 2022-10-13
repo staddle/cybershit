@@ -1,5 +1,5 @@
 <template>
-  <div v-if="role != undefined" class="flex flex-row">
+  <div v-if="role != undefined" class="flex flex-row justify-center">
     <span v-if="showName">{{ roleName[0] + roleName.substring(1).toLowerCase() }}</span>
     <img v-if="roleName == 'TOP'" src="~/assets/img/TOP.webp" alt="TOP">
     <img v-if="roleName == 'JUNGLE'" src="~/assets/img/JUNGLE.webp" alt="JUNGLE">
@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Role } from '~/model/Season';
+import { Role } from '~/model/Season'
 
 export default Vue.extend({
   name: 'RoleComponent',
