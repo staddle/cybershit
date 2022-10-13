@@ -8,7 +8,7 @@ export interface Database {
   getSeason: (id: string) => Promise<Season>,
   listenForSeason: (seasonId: string, callback: (season: Season) => void) => void,
   addSeason: (season: Season) => string,
-  addMatch: (match: Match, selectedSeasonId: string) => void,
+  addMatch: (match: Match, selectedSeasonId: string) => string,
   getParticipants: () => Promise<Participant[]>,
   addParticipant: (name: string) => void,
   refreshChampions: () => void,
@@ -55,7 +55,9 @@ const myPlugin : Plugin = ({ app }, inject) => {
     if (snapshot.val()) {
       const mapped : Season[] = Object.values(snapshot.val())
       mapped.map((value: Season) => {
-        value.matches = Object.values(value.matches)
+        if (value.matches) {
+          value.matches = Object.values(value.matches)
+        }
         return value
       })
       return mapped
@@ -67,7 +69,9 @@ const myPlugin : Plugin = ({ app }, inject) => {
     app.$fire.database.ref(`lol/seasons/${seasonId}`).on('value', (snapshot) => {
       if (snapshot.val()) {
         const season : Season = snapshot.val()
-        season.matches = Object.values(season.matches)
+        if (season.matches) {
+          season.matches = Object.values(season.matches)
+        }
         callback(season)
       }
     })
@@ -85,10 +89,11 @@ const myPlugin : Plugin = ({ app }, inject) => {
     return newSeason.id
   }
 
-  const addMatch = (match: Match, selectedSeasonId: string) => {
+  const addMatch = (match: Match, selectedSeasonId: string) : string => {
     const newMatchRef = app.$fire.database.ref(`lol/seasons/${selectedSeasonId}/matches`).push()
     match.id = newMatchRef.key ?? ''
     newMatchRef.set(match)
+    return newMatchRef.key ?? ''
   }
 
   const getParticipants = async () : Promise<Participant[]> => {
