@@ -1,3 +1,5 @@
+import { Role } from "./Season"
+
 export type Champion = {
   version: string
   id: string
@@ -20,6 +22,7 @@ export type Champion = {
     w: number
     h: number
   }
+  roles : Role[]
   tags: string[]
   partype: string
   stats: {

@@ -5,9 +5,8 @@
       :alt="`${champ.name} icon`"
       :width="width"
       :height="height"
-      :class="{'grayscale': notPlayable}"
-      @click.prevent="$emit('select-champion', champ.id)"
-      class="cursor-pointer hover:border hover:border-blue-600"
+      :class="{'grayscale': notPlayable, 'cursor-pointer hover:border hover:border-blue-600': clickable}"
+      @click.prevent="select()"
     >
   </div>
 </template>
@@ -26,7 +25,6 @@ export default Vue.extend({
     },
     notPlayable: {
       type: Boolean,
-      required: false,
       default: false
     },
     width: {
@@ -36,6 +34,21 @@ export default Vue.extend({
     height: {
       type: String,
       default: '50px'
+    },
+    clickable: {
+      type: Boolean,
+      default: true
+    }
+  },
+  methods: {
+    select () {
+      if (this.clickable) {
+        if (this.notPlayable) {
+          this.$emit('notify', 'You already selected this champion')
+        } else {
+          this.$emit('select-champion')
+        }
+      }
     }
   }
 })

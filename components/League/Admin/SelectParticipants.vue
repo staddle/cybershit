@@ -1,11 +1,16 @@
 <template>
   <div class="flex flex-col justify-center align-middle">
-    <h2>Participants</h2>
-    <div v-for="p in availableParticipants" :key="p.id" class="ring rounded-full ring-blue-600">
-      <input :id="p.id" v-model="participants" type="checkbox" :value="p.id">
-      <label :for="p.id">{{ p.name }}</label>
+    <h2 class="font-bold">
+      Participants
+    </h2>
+    <hr class="mb-4 border-teal-600 w-full">
+    <div>
+      <div v-for="p in availableParticipants" :key="p.id" class="my-4">
+        <input :id="p.id" v-model="participants" type="checkbox" :value="p.id" class="hidden p-check-box">
+        <label :for="p.id" class="bg-slate-700 rounded-md py-2 px-2 border border-slate-700 hover:border-teal-600 cursor-pointer">{{ p.name }}</label>
+      </div>
     </div>
-    <button v-if="allowAddParticipants" class="rounded-full bg-blue-400 text-white py-2" @click.prevent="addingParticipant = true">
+    <button v-if="allowAddParticipants" class="rounded-full bg-teal-600 text-white py-2 mt-4" @click.prevent="addingParticipant = true">
       Add Participant
     </button>
     <div v-if="addingParticipant">
@@ -69,5 +74,7 @@ export default Vue.extend({
 </script>
 
 <style>
-
+.p-check-box:checked + label {
+  background-color: #0D9488;
+}
 </style>

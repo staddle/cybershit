@@ -1,25 +1,43 @@
 <template>
-  <div class="flex flex-col justify-center align-middle">
-    <LeagueSelectComponent
-      v-if="!loading"
-      :seasons="seasons"
-      class="mb-8"
-      @season-selected="(s) => setSelectedSeason(s)"
-      @match-selected="(m) => setSelectedMatch(m)"
-      @match-added="(m) => addMatch(m)"
-      @participant-selected="(p) => selectedParticipant = p"
-    />
-    <div v-else>
-      Loading...
+  <div class="w-screen h-screen flex flex-col pt-8">
+    <div v-if="notification != ''" class="">
+      <span class="bg-blue-600 text-white">
+        {{ notification }}
+        <button class="border border-white px-2 my-1" @click.prevent="notification = ''">
+          x
+        </button>
+      </span>
     </div>
-    <button v-if="createdState" class="rounded-full bg-blue-600 text-white py-4 px-2" @click.prevent="rollRoles">
-      Roll
-    </button>
-    <LeagueRoleListComponent v-if="createdState || rolledState" :participants="selectedMatch?.champions" :own-participant="selectedParticipant" :state="rolledState" />
+    <div class="w-fit mx-auto">
+      <LeagueSelectComponent
+        v-if="!loading"
+        :seasons="seasons"
+        class="mb-8"
+        @season-selected="(s) => setSelectedSeason(s)"
+        @match-selected="(m) => setSelectedMatch(m)"
+        @match-added="(m) => addMatch(m)"
+        @participant-selected="(p) => selectedParticipant = p"
+      />
+      <div v-else>
+        Loading...
+      </div>
+    </div>
+    <div v-if="createdState || rolledState" class="col-start-2">
+      <LeagueRoleListComponent
+        :participants="selectedMatch?.champions"
+        :own-participant="selectedParticipant"
+        :state="rolledState"
+      />
+      <button v-if="createdState" class="rounded-full bg-blue-600 text-white py-4 px-2" @click.prevent="rollRoles">
+        Roll
+      </button>
+    </div>
     <div v-if="rolledState">
       <LeagueChampionList
+        v-if="selectedChampion === undefined"
         :not-champions="championsThatParticipantsHavePlayed()"
-        @select-participant="(c) => selectChampion(c)"
+        @select-champion="(c) => selectChampion(c)"
+        @notify="notify($event)"
       />
     </div>
   </div>
@@ -38,7 +56,8 @@ export default Vue.extend({
     selectedParticipant: null as Participant | null,
     selectedMatchId: '',
     selectedTab: 'overview',
-    loading: true
+    loading: true,
+    notification: ''
   }),
   computed: {
     selectedSeason (): Season | undefined {
@@ -55,6 +74,9 @@ export default Vue.extend({
     },
     role (): Role | undefined {
       return this.selectedMatch?.champions.filter((x: ChampionParticipant) => x.participant.id === this.selectedParticipant?.id)[0].role
+    },
+    selectedChampion (): Champion | undefined {
+      return this.selectedMatch?.champions.filter((x: ChampionParticipant) => x.participant.id === this.selectedParticipant?.id)[0].champion
     }
   },
   mounted () {
@@ -62,7 +84,6 @@ export default Vue.extend({
   },
   methods: {
     refreshSeasons () {
-      this.loading = false
       this.$database.getSeasons().then((seasons: Season[]) => {
         this.seasons = seasons
         this.loading = false
@@ -70,11 +91,15 @@ export default Vue.extend({
     },
     refreshSelectedSeason () {
       this.$database.getSeason(this.selectedSeasonId).then((season: Season) => {
-        this.seasons = this.seasons.map((x: Season) => x.id === season.id ? season : x)
+        this.setSeasonInSeasons(season)
       })
+    },
+    setSeasonInSeasons (season: Season) {
+      this.seasons = this.seasons.map((x: Season) => x.id === season.id ? season : x)
     },
     setSelectedSeason (seasonId: string) {
       this.selectedSeasonId = seasonId
+      this.$database.listenForSeason(seasonId, (season: Season) => this.setSeasonInSeasons(season))
     },
     setSelectedMatch (matchId: string) {
       this.selectedMatchId = matchId
@@ -97,14 +122,24 @@ export default Vue.extend({
       }
       return []
     },
-    selectChampion (champion: Champion) {
+    async selectChampion (champion: Champion) {
       if (this.selectedParticipant && this.selectedMatch) {
-        this.$database.selectChampion(this.selectedSeasonId,
+        const newMatch = await this.$database.selectChampion(this.selectedSeasonId,
           this.selectedMatchId,
           this.selectedParticipant.id,
-          champion).then(this.refreshSelectedSeason)
+          champion)
+        if (this.selectedSeason) {
+          this.selectedSeason.matches.find((x: Match) => x.id === newMatch.id)!.champions = newMatch.champions
+        }
       }
+    },
+    notify (message: string) {
+      this.notification = message
     }
   }
 })
 </script>
+
+<style lang="scss">
+
+</style>
