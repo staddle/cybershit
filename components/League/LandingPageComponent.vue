@@ -28,15 +28,13 @@
       />
       <LoadingComponent v-else />
     </div>
-    <div v-if="createdState || rolledState" class="col-start-2">
+    <div v-if="createdState || rolledState" class="mx-16">
       <LeagueRoleListComponent
         :participants="selectedMatch?.champions"
         :own-participant="selectedParticipant"
         :state="rolledState"
+        @roll="rollRoles()"
       />
-      <button v-if="createdState" class="rounded-full bg-blue-600 text-white py-4 px-2" @click.prevent="rollRoles">
-        Roll
-      </button>
     </div>
     <div v-if="rolledState">
       <LeagueChampionList

@@ -1,11 +1,11 @@
 <template>
-  <div class="flex flex-row">
+  <div class="grid grid-cols-5 grid-rows-1 bg-slate-800 rounded-md border border-violet-800 text-white px-4 divide-x">
     <div
       v-for="cp in participantsSortedByRole"
       :key="cp.participant.id"
-      class="flex flex-col mx-4"
-      :class="{'text-black': cp.participant.id === ownParticipant.id,
-               'text-slate-600': cp.participant.id !== ownParticipant.id}"
+      class="flex flex-col px-4 py-2 border-slate-600"
+      :class="{'text-white': cp.participant.id === ownParticipant.id,
+               'text-slate-300': cp.participant.id !== ownParticipant.id}"
     >
       <span>
         {{ cp.participant.name }}
@@ -21,6 +21,9 @@
         :is-own="cp.participant.id === ownParticipant.id"
       />
     </div>
+    <button v-if="!state" class="rounded-md bg-violet-800 text-white py-2 px-4 mx-auto col-start-3 mb-2" @click.prevent="$emit('roll')">
+      Roll Roles
+    </button>
   </div>
 </template>
 
