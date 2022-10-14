@@ -2,7 +2,7 @@
   <div>
     <div v-if="participant.champion" class="grid grid-cols-1 grid-rows-3 h-full">
       <span>{{ participant.champion.name }}</span>
-      <a :href="`https://lolalytics.com/lol/${participant.champion.id.toLowerCase()}/build/`" class="mx-auto row-span-2 my-auto relative">
+      <a :href="`https://lolalytics.com/lol/${participant.champion.id.toLowerCase()}/build/`" target="_blank" class="mx-auto row-span-2 my-auto relative">
         <div class="ring-2 ring-inset ring-violet-800 absolute top-0 right-0 w-full h-full" />
         <LeagueChampIcon :champ="participant.champion" :clickable="false" />
       </a>

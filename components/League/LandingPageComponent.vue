@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-screen flex flex-col">
+  <div class="w-screen min-h-screen flex flex-col">
     <div v-if="notification != ''" class="fixed top-10 right-10 z-10">
       <span class="bg-teal-600 text-white px-2 py-2 rounded-md hover:bg-teal-700 cursor-pointer" @click.prevent="notification = ''">
         {{ notification }}
@@ -128,10 +128,14 @@ export default Vue.extend({
     },
     championsThatParticipantsHavePlayed (): Champion[] {
       if (this.selectedParticipant != null) {
-        return this.selectedSeason?.matches
+        const selfChamps = this.selectedSeason?.matches
           .filter((x: Match) => x.champions.filter((y: ChampionParticipant) => y.participant.id === this.selectedParticipant?.id && y.champion).length > 0)
           .map((x: Match) => x.champions.filter((y: ChampionParticipant) => y.participant.id === this.selectedParticipant?.id)[0].champion ?? {} as Champion) ??
           []
+        const otherChamps = this.selectedMatch?.champions
+          .filter((x: ChampionParticipant) => x.champion)
+          .map((x: ChampionParticipant) => x.champion) ?? []
+        return [...selfChamps, ...otherChamps]
       }
       return []
     },

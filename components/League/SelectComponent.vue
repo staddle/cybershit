@@ -79,7 +79,7 @@ export default Vue.extend({
   data () {
     return {
       selectedSeason: '',
-      selectedParticipant: null as Participant | null,
+      selectedParticipant: '',
       selectedMatch: '',
       playersForMatch: [] as Participant[],
       addingMatch: false
@@ -122,16 +122,19 @@ export default Vue.extend({
         }
       }
     },
-    selectedParticipant (newParticipant) {
+    selectedParticipant (newParticipant : string) {
       if (newParticipant) {
         this.$emit('participant-selected', this.players.find((x: Participant) => x.name === newParticipant))
+        // localStorage
+        localStorage.setItem('selectedParticipant', newParticipant)
       }
     },
     selectedMatch (newMatch) {
       if (newMatch) {
-        this.selectedParticipant = null
+        this.selectedParticipant = ''
         this.$emit('match-selected', newMatch)
         this.$emit('participant-selected', null)
+        this.getLocalStorage()
       }
     }
   },
@@ -139,10 +142,18 @@ export default Vue.extend({
     if (this.seasons.length === 1) {
       this.selectedSeason = this.seasons[0].id
     }
+    this.getLocalStorage()
   },
   methods: {
     setParticipants (participants: Participant[]) {
       this.playersForMatch = participants
+    },
+    getLocalStorage () {
+      const lS = localStorage.getItem('selectedParticipant')
+      if (lS) {
+        this.selectedParticipant = lS?.toString() ?? ''
+        this.$emit('participant-selected', this.players.find((x: Participant) => x.name === this.selectedParticipant))
+      }
     },
     addMatch () {
       if (this.selectedSeasonObject && this.playersForMatch.length > 0) {

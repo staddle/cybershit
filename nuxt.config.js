@@ -65,7 +65,10 @@ export default {
           ***REMOVED***
         },
         services: {
-          database: true,
+          database: {
+            emulatorPort: 9000,
+            emulatorHost: 'localhost'
+          },
           analytics: true,
           appCheck: true
         }
