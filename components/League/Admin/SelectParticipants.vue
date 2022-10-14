@@ -14,8 +14,8 @@
     </div>
     <div v-if="addingParticipant" class="fixed bg-black bg-opacity-40 top-0 left-0 w-screen h-screen flex justify-center items-center">
       <div class="bg-slate-800 rounded-md border border-teal-600 h-fit py-4 relative px-4">
-        <button class="absolute top-0 right-0 pr-2 pt-2 text-teal-400 hover:text-teal-600 w-6 h-6 text-sm" @click.prevent="addingParticipant = false">
-          <FontAwesomeIcon :icon="['fas', 'x']" />
+        <button class="absolute top-0 right-0 pr-2 pt-1 text-teal-400 hover:text-teal-600 w-6 h-6" @click.prevent="addingParticipant = false">
+          <FontAwesomeIcon icon="xmark" />
         </button>
         <h1 class="text-lg">
           Add Participant for Season {{ season.name }}

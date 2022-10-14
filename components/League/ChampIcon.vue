@@ -5,7 +5,8 @@
       :alt="`${champ.name} icon`"
       :width="width"
       :height="height"
-      :class="{'grayscale': notPlayable, 'cursor-pointer hover:border hover:border-violet-600': clickable}"
+      class="border border-slate-800"
+      :class="{'grayscale': notPlayable, 'cursor-pointer hover:border-violet-600 transition-all duration-75': clickable}"
       @click.prevent="select()"
     >
   </div>
