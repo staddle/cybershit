@@ -6,20 +6,20 @@
           <LeagueRoleComponent
             :role="role"
             :show-name="false"
-            class="hover:opacity-50 rounded-md"
+            class="hover:opacity-50 rounded-md transition-all duration-75"
             :class="{'bg-slate-900': selectedRole == role}"
           />
         </button>
       </div>
       <div class="h-full relative inline leading-8">
-        <FontAwesomeIcon class="text-teal-500 absolute left-2 top-0 py-2 border-r border-r-teal-600 pr-2 h-full" icon="magnifying-glass" />
-        <input v-model="query" type="text" class="bg-slate-700 rounded-md pr-2 pl-12 text-white hover:bg-slate-600 focus-visible:outline focus-visible:outline-1 focus-visible:outline-teal-600 " placeholder="Search...">
+        <FontAwesomeIcon class="text-teal-500 absolute left-2 top-0 py-2 pr-2 h-full" icon="magnifying-glass" />
+        <input v-model="query" type="text" class="bg-slate-700 rounded-md pr-2 pl-8 text-white transition-all duration-100 outline outline-0 outline-teal-600 hover:bg-slate-600 focus-visible:outline focus-visible:outline-1" placeholder="Search...">
       </div>
     </div>
     <hr class="border-slate-600 w-full mt-2">
     <div class="grid grid-flow-row grid-cols-8 gap-4 mx-auto p-4">
-      <button class="border-violet-800 border h-12 w-12 text-violet-600 hover:bg-violet-800 hover:text-white" @click.prevent="checkRandom = true; check = true">
-        <FontAwesomeIcon icon="dice" />
+      <button class="border-violet-800 border h-12 w-12 text-violet-600 hover:bg-violet-800 hover:text-white transition-all" @click.prevent="checkRandom = true; check = true">
+        <FontAwesomeIcon icon="question" class="bouncy" />
       </button>
       <LeagueChampIcon
         v-for="champ in champions"
@@ -33,8 +33,8 @@
     </div>
     <div v-if="check" class="fixed bg-black bg-opacity-40 top-0 left-0 w-screen h-screen flex justify-center items-center">
       <div class="bg-slate-800 rounded-md border border-teal-600 h-fit pb-6 pt-6 relative px-8">
-        <button class="absolute top-0 right-0 pr-2 pt-2 text-teal-400 hover:text-teal-600 w-6 h-6 text-sm" @click.prevent="check = false">
-          <FontAwesomeIcon :icon="['fas', 'x']" />
+        <button class="absolute top-0 right-0 pr-2 pt-1 text-teal-400 hover:text-teal-600 w-6 h-6" @click.prevent="check = false">
+          <FontAwesomeIcon icon="xmark" />
         </button>
         <h1 v-if="!checkRandom" class="text-lg">
           Select {{ preSelectedChamp?.name }}?
@@ -124,3 +124,24 @@ export default Vue.extend({
   }
 })
 </script>
+
+<style>
+@keyframes wiggle {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(25deg);
+  }
+  75% {
+    transform: rotate(-25deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+button:hover>.bouncy{
+  animation: wiggle 1s linear infinite;
+}
+</style>
