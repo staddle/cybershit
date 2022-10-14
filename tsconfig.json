@@ -27,7 +27,8 @@
       "@nuxt/types",
       "@types/node",
       "@nuxtjs/firebase",
-      "@nuxtjs/recaptcha"
+      "@nuxtjs/recaptcha",
+      "./database.d.ts"
     ]
   },
   "exclude": [
