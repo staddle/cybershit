@@ -45,7 +45,7 @@ export default Vue.extend({
     select () {
       if (this.clickable) {
         if (this.notPlayable) {
-          this.$emit('notify', 'You already played this champion previously.')
+          this.$emit('notify', 'You already played this champion previously or someone else picked it.')
         } else {
           this.$emit('select-champion')
         }

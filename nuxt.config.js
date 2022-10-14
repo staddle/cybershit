@@ -65,7 +65,10 @@ export default {
           measurementId: 'G-D349ZFL1EV'
         },
         services: {
-          database: true,
+          database: {
+            emulatorPort: 9000,
+            emulatorHost: 'localhost'
+          },
           analytics: true,
           appCheck: true
         }
