@@ -50,7 +50,7 @@
         <hr class="border-teal-600 mt-1 mb-2">
         <LeagueAdminSelectParticipants
           :season="selectedSeasonObject"
-          :allow-add-participants="false"
+          :allow-add-participants="true"
           :max-participants="5"
           @participant-selected="(p) => setParticipants(p)"
           @notify="$emit('notify', $event)"
@@ -129,7 +129,9 @@ export default Vue.extend({
     },
     selectedMatch (newMatch) {
       if (newMatch) {
+        this.selectedParticipant = null
         this.$emit('match-selected', newMatch)
+        this.$emit('participant-selected', null)
       }
     }
   },

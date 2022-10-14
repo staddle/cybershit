@@ -1,15 +1,38 @@
 <template>
-  <div>
-    <label for="season">Season: </label>
-    <select id="seasons" v-model="selectedSeasonIndex">
-      <option v-for="season in seasons" :key="season.id" :value="season.id">
-        {{ season.name }}
-      </option>
-      <option value="new">
-        New Season
-      </option>
-    </select>
-    <LeagueAdminNewSeason :season="selectedSeason" :seasons-length="seasons.length" @season-created="(s) => seasonAdded(s)" />
+  <div class="w-full h-full flex flex-col align-middle justify-center">
+    <div class="bg-slate-800 rounded-md border border-teal-600 mx-auto pb-8 pt-4">
+      <div class="mx-4 flex flex-row justify-between">
+        <h1 class="font-bold text-2xl">
+          Admin Console
+        </h1>
+        <FontAwesomeIcon icon="arrow-right-to-bracket" class="cursor-pointer hover:text-teal-500" @click.prevent="$router.push('/flexerator')" />
+      </div>
+      <hr class="border-teal-600 mt-1">
+      <div v-if="!loading" class="mx-4 mt-4">
+        <label for="season" class="mr-2">Season: </label>
+        <select id="seasons" v-model="selectedSeasonIndex" class="rounded-md bg-slate-700 py-1 px-2">
+          <option v-for="season in seasons" :key="season.id" :value="season.id">
+            {{ season.name }}
+          </option>
+          <option value="new">
+            New Season
+          </option>
+        </select>
+        <LeagueAdminNewSeason
+          :season="selectedSeason"
+          :seasons-length="seasons.length"
+          class="mt-2"
+          @season-created="(s) => seasonAdded(s)"
+          @update="updateSeason($event)"
+        />
+        <LeagueAdminSelectParticipants
+          v-if="selectedSeason != null"
+          :season="selectedSeason"
+          :allow-add-participants="true"
+        />
+      </div>
+      <LoadingComponent v-else />
+    </div>
   </div>
 </template>
 
@@ -23,7 +46,8 @@ export default Vue.extend({
     return {
       selectedSeasonIndex: 'new',
       seasons: [] as Season[],
-      selectedSeason: null as Season | null
+      selectedSeason: null as Season | null,
+      loading: true
     }
   },
   watch: {
@@ -42,6 +66,7 @@ export default Vue.extend({
   methods: {
     refreshSeasons () {
       this.$database.getSeasons().then((seasons: Season[]) => {
+        this.loading = false
         this.seasons = seasons
         if (this.seasons && this.seasons.length > 0) {
           this.selectedSeasonIndex = this.seasons[0].id.toString()
@@ -52,6 +77,10 @@ export default Vue.extend({
       const newId = this.$database.addSeason(newSeason)
       this.refreshSeasons()
       this.selectedSeasonIndex = newId
+    },
+    updateSeason (season : Season) {
+      this.$database.updateSeason(season)
+      this.refreshSeasons()
     }
   }
 })

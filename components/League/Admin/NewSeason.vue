@@ -1,16 +1,12 @@
 <template>
   <div>
-    <div class="flex flex-col flex-auto">
-      <span>ID: {{ seasonId }}</span>
-      <label for="name">Name: </label>
-      <input id="name" v-model="name" class="border border-blue-600 rounded-full">
-      <LeagueAdminSelectParticipants
-        :season="season"
-        :allow-add-participants="true"
-        @participant-selected="(p) => selectParticipant(p)"
-      />
-      <button class="rounded-full bg-blue-600 text-white py-2 px-4 mt-8" @click.prevent="submit">
-        Submit
+    <div class="grid grid-flow-row gap-2">
+      <div class="flex flex-row">
+        <label for="name" class="mr-2 my-auto">Name: </label>
+        <input id="name" v-model="name" class="bg-slate-700 px-2 py-1 rounded-md focus-visible:outline-teal-600 focus-visible:outline-1 focus-visible:outline">
+      </div>
+      <button v-if="season == null" class="rounded-md bg-violet-800 text-white py-2 px-4 mt-4 hover:bg-violet-700 active:bg-violet-900" @click.prevent="submit">
+        Create New
       </button>
     </div>
   </div>
@@ -19,13 +15,13 @@
 <script lang="ts">
 import Vue from 'vue'
 
-import { Match, Participant, Season } from '~/model/Season'
+import { Participant, Season } from '~/model/Season'
 
 export default Vue.extend({
   name: 'LeagueAdminNewSeason',
   props: {
     season: {
-      type: Object as () => Season,
+      type: Object as () => Season | null,
       required: false,
       default: () => undefined
     },
@@ -36,18 +32,30 @@ export default Vue.extend({
   },
   data () {
     return {
-      seasonId: this.season ? (this.season as Season).id : this.seasonsLength,
       name: this.season?.name ?? '',
       participants: [] as Participant[]
+    }
+  },
+  watch: {
+    season (newVal) {
+      this.name = newVal?.name ?? ''
+    }
+  },
+  mounted: function () {
+    if (this.season) {
+      this.name = this.season.name
     }
   },
   methods: {
     submit () {
       this.$emit('season-created', {
-        id: this.seasonId,
+        name: this.name
+      } as Season)
+    },
+    update () {
+      this.$emit('update', {
         name: this.name,
-        participants: this.participants,
-        matches: [] as Match[]
+        participants: this.participants
       } as Season)
     },
     selectParticipant (p : Participant[]) {

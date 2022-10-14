@@ -8,7 +8,7 @@
         </button>
       </span>
     </div>
-    <div class="w-full flex justify-center py-4">
+    <div class="w-full flex justify-center mt-4">
       <div class="text-center pb-2 pr-2 font-bold text-5xl bg-gradient-to-r from-teal-600 to-violet-800 rounded-md hover:animate-spin cursor-default">
         <div class="bg-slate-900 rounded-md w-full h-full m-1 text-teal-400">
           FLEXERATOR
@@ -19,7 +19,7 @@
       <LeagueSelectComponent
         v-if="!loading"
         :seasons="seasons"
-        class="mb-8"
+        class="mt-8 mb-12"
         @season-selected="(s) => setSelectedSeason(s)"
         @match-selected="(m) => setSelectedMatch(m)"
         @match-added="(m) => addMatch(m)"
@@ -28,22 +28,29 @@
       />
       <LoadingComponent v-else />
     </div>
-    <div v-if="createdState || rolledState" class="mx-16">
+    <div v-if="createdState || rolledState" class="mx-16 flex flex-col">
+      <button class="rounded-md bg-violet-800 text-white py-2 px-4 mx-auto mb-2 border-none disabled:text-violet-300" :disabled="rolledState" @click.prevent="rollRoles()">
+        <span v-if="createdState">Roll Roles</span>
+        <span v-else>Roles have been assigned</span>
+      </button>
       <LeagueRoleListComponent
         :participants="selectedMatch?.champions"
         :own-participant="selectedParticipant"
         :state="rolledState"
+        :class="{'h-72': rolledState}"
         @roll="rollRoles()"
       />
     </div>
-    <div v-if="rolledState">
+    <div v-if="rolledState" class="mt-8">
       <LeagueChampionList
         v-if="selectedChampion === undefined"
         :not-champions="championsThatParticipantsHavePlayed()"
+        class="mx-auto w-fit rounded-md bg-slate-800 border border-violet-800"
         @select-champion="(c) => selectChampion(c)"
         @notify="notify($event)"
       />
     </div>
+    <LeagueFooterComponent />
   </div>
 </template>
 
@@ -115,7 +122,9 @@ export default Vue.extend({
       }
     },
     rollRoles () {
-      this.$database.rollRoles(this.selectedSeasonId, this.selectedMatchId)
+      if (this.createdState) {
+        this.$database.rollRoles(this.selectedSeasonId, this.selectedMatchId)
+      }
     },
     championsThatParticipantsHavePlayed (): Champion[] {
       if (this.selectedParticipant != null) {

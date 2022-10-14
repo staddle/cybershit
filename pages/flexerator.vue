@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-900 text-white h-screen w-screen">
+  <div class="bg-slate-900 text-white w-screen overflow-auto">
     <LeagueLandingPageComponent />
   </div>
 </template>
@@ -30,3 +30,9 @@ export default Vue.extend({
   }
 })
 </script>
+
+<style>
+body {
+  background-color: rgb(15 23 42 / var(--tw-bg-opacity));
+}
+</style>

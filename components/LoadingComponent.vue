@@ -44,7 +44,7 @@ export default Vue.extend({
   },
   mounted: function () {
     if (this.type === '') {
-      const types = ['gradient', 'squares', 'dots']
+      const types = ['gradient', 'squares']
       this.typeData = types[Math.floor(Math.random() * types.length)]
     } else {
       this.typeData = this.type

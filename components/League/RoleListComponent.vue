@@ -3,17 +3,26 @@
     <div
       v-for="cp in participantsSortedByRole"
       :key="cp.participant.id"
-      class="flex flex-col px-4 py-2 border-b text-center justify-center text-white border-slate-600"
+      class="px-4 py-2 text-center grid grid-cols-1 text-white border-slate-600"
+      :class="{
+        'grid-rows-3': state,
+        'grid-rows-2': !state
+      }"
     >
-      <span class="rounded-md mx-auto px-2 pb-1" :class="{'bg-violet-800': cp.participant.id === ownParticipant.id}">
-        {{ cp.participant.name }}
-      </span>
+      <div>
+        <span class="rounded-md mx-auto px-2 pb-1 text-2xl" :class="{'bg-violet-800': cp.participant.id === ownParticipant.id}">
+          {{ cp.participant.name }}
+        </span>
+        <hr class="border-slate-600 mt-3 w-32 mx-auto">
+      </div>
       <LeagueRoleComponent
         v-if="state"
         :role="cp.role"
         :is-own="cp.participant.id === ownParticipant.id"
         :show-name="false"
-        class="my-2"
+        :height="46"
+        :width="46"
+        class="mx-auto"
       />
       <LeagueChampionDetail
         v-if="state"
@@ -22,9 +31,6 @@
       />
       <LeagueRoleAnimation v-else class="h-16" :delay="Math.random()" />
     </div>
-    <button v-if="!state" class="rounded-md bg-violet-800 text-white py-2 px-4 mx-auto col-start-3 my-2 border-none" @click.prevent="$emit('roll')">
-      Roll Roles
-    </button>
   </div>
 </template>
 

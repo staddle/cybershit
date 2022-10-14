@@ -1,15 +1,8 @@
 <template>
-  <div v-if="role != undefined" class="flex flex-row justify-center">
-    <span v-if="showName">{{ roleName[0] + roleName.substring(1).toLowerCase() }}</span>
-    <img v-if="roleName == 'TOP'" src="~/assets/img/TOP.webp" alt="TOP">
-    <img v-if="roleName == 'JUNGLE'" src="~/assets/img/JUNGLE.webp" alt="JUNGLE">
-    <img v-if="roleName == 'MID'" src="~/assets/img/MID.webp" alt="MID">
-    <img v-if="roleName == 'BOT'" src="~/assets/img/BOT.webp" alt="BOT">
-    <img v-if="roleName == 'SUPPORT'" src="~/assets/img/SUPPORT.webp" alt="SUPPORT">
+  <div v-if="role != undefined">
+    <img :src="require(`~/assets/img/${roleName}.webp`)" :alt="roleName" :width="width" :height="height">
   </div>
-  <div v-else>
-    No role for this participant
-  </div>
+  <FontAwesomeIcon v-else icon="x" />
 </template>
 
 <script lang="ts">
@@ -23,15 +16,15 @@ export default Vue.extend({
       type: Number,
       required: true
     },
-    isOwn: {
-      type: Boolean,
+    width: {
+      type: Number,
       required: false,
-      default: false
+      default: 32
     },
-    showName: {
-      type: Boolean,
+    height: {
+      type: Number,
       required: false,
-      default: true
+      default: 32
     }
   },
   computed: {
