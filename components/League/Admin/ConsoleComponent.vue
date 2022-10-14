@@ -8,7 +8,7 @@
         <FontAwesomeIcon icon="arrow-right-to-bracket" class="cursor-pointer hover:text-teal-500" @click.prevent="$router.push('/flexerator')" />
       </div>
       <hr class="border-teal-600 mt-1">
-      <div v-if="!loading" class="mx-4 mt-4">
+      <div class="mx-4 mt-4">
         <label for="season" class="mr-2">Season: </label>
         <select id="seasons" v-model="selectedSeasonIndex" class="rounded-md bg-slate-700 py-1 px-2">
           <option v-for="season in seasons" :key="season.id" :value="season.id">
@@ -30,7 +30,6 @@
           :allow-add-participants="true"
         />
       </div>
-      <LoadingComponent v-else />
     </div>
   </div>
 </template>
