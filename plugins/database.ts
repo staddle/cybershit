@@ -1,7 +1,7 @@
 import { Plugin } from '@nuxt/types'
 import { ChampionParticipant, Match, MatchState, Participant, Role, Season } from '~/model/Season'
 import { Champion } from '~/model/Champion'
-import championRoles from '~/assets/championRoles'
+import championRoles from '~/assets/championRoles.js'
 
 export interface Database {
   getSeasons: () => Promise<Season[]>,
