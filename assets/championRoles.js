@@ -1034,6 +1034,7 @@ export default [
   }
 ]
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const old = [
   {
     name: 'Aatrox',
