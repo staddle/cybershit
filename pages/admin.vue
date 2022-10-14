@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-slate-900 text-white w-screen h-screen overflow-auto">
     <LeagueAdminConsoleComponent />
   </div>
 </template>
@@ -19,3 +19,9 @@ export default Vue.extend({
   }
 })
 </script>
+
+<style>
+body {
+  background-color: rgb(15 23 42 / var(--tw-bg-opacity));
+}
+</style>

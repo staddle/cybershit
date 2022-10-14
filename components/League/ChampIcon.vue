@@ -5,7 +5,7 @@
       :alt="`${champ.name} icon`"
       :width="width"
       :height="height"
-      :class="{'grayscale': notPlayable, 'cursor-pointer hover:border hover:border-blue-600': clickable}"
+      :class="{'grayscale': notPlayable, 'cursor-pointer hover:border hover:border-violet-600': clickable}"
       @click.prevent="select()"
     >
   </div>
@@ -44,7 +44,7 @@ export default Vue.extend({
     select () {
       if (this.clickable) {
         if (this.notPlayable) {
-          this.$emit('notify', 'You already selected this champion')
+          this.$emit('notify', 'You already played this champion previously.')
         } else {
           this.$emit('select-champion')
         }

@@ -626,7 +626,9 @@ export default [
   },
   {
     name: 'Rell',
-    roles: []
+    roles: [
+      'support'
+    ]
   },
   {
     name: 'Renata Glasc',
@@ -670,7 +672,9 @@ export default [
   },
   {
     name: 'Samira',
-    roles: []
+    roles: [
+      'bot'
+    ]
   },
   {
     name: 'Sejuani',
@@ -687,7 +691,10 @@ export default [
   },
   {
     name: 'Seraphine',
-    roles: []
+    roles: [
+      'mid',
+      'support'
+    ]
   },
   {
     name: 'Sett',
@@ -962,7 +969,10 @@ export default [
   },
   {
     name: 'Yone',
-    roles: []
+    roles: [
+      'top',
+      'mid'
+    ]
   },
   {
     name: 'Yorick',
