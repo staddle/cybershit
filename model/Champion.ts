@@ -1,4 +1,4 @@
-import { Role } from "./Season"
+import { Role } from './Season'
 
 export type Champion = {
   version: string
