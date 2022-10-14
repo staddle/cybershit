@@ -23,7 +23,6 @@
           :seasons-length="seasons.length"
           class="mt-2"
           @season-created="(s) => seasonAdded(s)"
-          @update="updateSeason($event)"
         />
         <LeagueAdminSelectParticipants
           v-if="selectedSeason != null"
@@ -77,10 +76,6 @@ export default Vue.extend({
       const newId = this.$database.addSeason(newSeason)
       this.refreshSeasons()
       this.selectedSeasonIndex = newId
-    },
-    updateSeason (season : Season) {
-      this.$database.updateSeason(season)
-      this.refreshSeasons()
     }
   }
 })
