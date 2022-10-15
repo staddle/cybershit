@@ -1,6 +1,7 @@
 <template>
-  <div class="bg-slate-900 text-white w-screen overflow-auto">
+  <div class="bg-slate-900 text-white w-screen min-h-screen flex flex-col justify-between">
     <LeagueLandingPageComponent />
+    <LeagueFooterComponent />
   </div>
 </template>
 

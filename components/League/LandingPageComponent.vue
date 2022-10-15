@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen min-h-screen flex flex-col">
+  <div class="w-screen flex flex-col">
     <div v-if="notification != ''" class="fixed top-10 right-10 z-10">
       <span class="bg-teal-600 text-white px-2 py-2 rounded-md hover:bg-teal-700 cursor-pointer" @click.prevent="notification = ''">
         {{ notification }}
@@ -41,7 +41,7 @@
         @roll="rollRoles()"
       />
     </div>
-    <div v-if="rolledState" class="mt-8">
+    <div v-if="rolledState" class="my-8">
       <LeagueChampionList
         v-if="selectedChampion === undefined"
         :not-champions="championsThatParticipantsHavePlayed()"
@@ -50,7 +50,6 @@
         @notify="notify($event)"
       />
     </div>
-    <LeagueFooterComponent />
   </div>
 </template>
 
