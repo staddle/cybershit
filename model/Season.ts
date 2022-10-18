@@ -27,6 +27,7 @@ enum MatchState {
 
 type Match = {
   id: string
+  name: string
   champions: ChampionParticipant[]
   date: number
   state: MatchState

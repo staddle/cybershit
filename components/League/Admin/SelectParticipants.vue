@@ -82,6 +82,7 @@ export default Vue.extend({
   methods: {
     pushParticipant (name: string) {
       this.$database.addParticipant(name)
+      this.participantName = ''
       this.refreshParticipants()
       this.addingParticipant = false
     },
