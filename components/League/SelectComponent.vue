@@ -7,9 +7,9 @@
           {{ season.name }}
         </option>
       </select>
-      <button v-if="!seasons || seasons.length == 0" class="rounded-md bg-teal-600 text-white px-2 py-px ml-1 border border-teal-600" @click.prevent="$router.push('/admin')">
+      <router-link v-if="!seasons || seasons.length == 0" to="flexerator/admin" class="rounded-md bg-teal-600 text-white px-2 py-px ml-1 border border-teal-600">
         <FontAwesomeIcon :icon="['fas', 'plus']" />
-      </button>
+      </router-link>
     </div>
     <div class="mr-4">
       <label for="match" class="mr-2">Match:</label>
@@ -19,13 +19,13 @@
         class="px-2 py-1 bg-slate-700 rounded-md disabled:border disabled:border-slate-600"
         :disabled="selectedSeason == '' || matches.length == 0"
       >
+        <option value="new">
+          New Match
+        </option>
         <option v-for="match in matches" :key="match.id" :value="match.id">
-          {{ new Date(match.date).toLocaleDateString() }}
+          {{ getMatchName(match) }}
         </option>
       </select>
-      <button v-if="isMatchToday.length == 0 && selectedSeason !== ''" class="rounded-md bg-teal-600 text-white px-2 py-px border border-teal-600" @click.prevent="addingMatch = true">
-        <FontAwesomeIcon :icon="['fas', 'plus']" />
-      </button>
     </div>
     <div class="flex flex-row">
       <label for="player" class="mr-2">Player:</label>
@@ -41,13 +41,19 @@
         </option>
       </select>
     </div>
-    <div v-if="addingMatch" class="fixed bg-black bg-opacity-40 top-0 left-0 w-screen h-screen flex justify-center items-center">
+    <div v-if="addingMatch" class="fixed bg-black bg-opacity-40 z-10 top-0 left-0 w-screen h-screen flex justify-center items-center">
       <div class="bg-slate-800 rounded-md border border-teal-600 h-fit py-4 relative px-4">
         <button class="absolute top-0 right-0 pr-2 pt-1 text-teal-400 hover:text-teal-600 w-6 h-6" @click.prevent="addingMatch = false">
           <FontAwesomeIcon icon="xmark" />
         </button>
-        <h1 class="text-lg">Add Match for {{ new Date().toLocaleDateString() }}</h1>
+        <h1 class="text-lg">
+          Add Match for {{ new Date().toLocaleDateString() }}
+        </h1>
         <hr class="border-teal-600 mt-1 mb-2">
+        <div class="my-2">
+          <label for="name">Name:</label>
+          <input id="name" v-model="name" placeholder="Name..." class="bg-slate-700 px-2 py-1 rounded-md focus-visible:outline-teal-600 focus-visible:outline-1 focus-visible:outline">
+        </div>
         <LeagueAdminSelectParticipants
           :season="selectedSeasonObject"
           :allow-add-participants="true"
@@ -82,7 +88,8 @@ export default Vue.extend({
       selectedParticipant: '',
       selectedMatch: '',
       playersForMatch: [] as Participant[],
-      addingMatch: false
+      addingMatch: false,
+      name: ''
     }
   },
   computed: {
@@ -131,10 +138,14 @@ export default Vue.extend({
     },
     selectedMatch (newMatch) {
       if (newMatch) {
-        this.selectedParticipant = ''
-        this.$emit('match-selected', newMatch)
-        this.$emit('participant-selected', null)
-        this.getLocalStorage()
+        if (newMatch === 'new') {
+          this.addingMatch = true
+        } else {
+          this.selectedParticipant = ''
+          this.$emit('match-selected', newMatch)
+          this.$emit('participant-selected', null)
+          this.getLocalStorage()
+        }
       }
     }
   },
@@ -159,6 +170,7 @@ export default Vue.extend({
       if (this.selectedSeasonObject && this.playersForMatch.length > 0) {
         const newMatch : Match = {
           id: '',
+          name: this.name,
           champions: this.playersForMatch.map((p) => {
             return {
               champion: null as Champion | null,
@@ -168,10 +180,22 @@ export default Vue.extend({
           date: (Number)(new Date()),
           state: MatchState.CREATED
         }
-        this.$emit('match-added', newMatch)
+        const newId = this.$database.addMatch(newMatch, this.selectedSeasonObject.id)
+        this.selectedMatch = newId
+        this.name = ''
         this.addingMatch = false
       } else {
         alert('Please select a season and at least one player')
+      }
+    },
+    getMatchName (match: Match) {
+      if (!match.name) {
+        return new Date(match.date).toLocaleDateString()
+      }
+      if (this.matches.filter(x => x.name === match.name).length > 1) {
+        return `${match.name} (${new Date(match.date).toLocaleDateString()})`
+      } else {
+        return match.name
       }
     }
   }

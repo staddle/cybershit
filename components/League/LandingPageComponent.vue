@@ -4,7 +4,7 @@
       <span class="bg-teal-600 text-white px-2 py-2 rounded-md hover:bg-teal-700 cursor-pointer" @click.prevent="notification = ''">
         {{ notification }}
         <button class="x-2 my-1 text-sm ml-2 hover:text-slate-200" @click.prevent="notification = ''">
-          <FontAwesomeIcon :icon="['fas', 'x']" />
+          <FontAwesomeIcon :icon="['fas', 'xmark']" />
         </button>
       </span>
     </div>
@@ -22,7 +22,6 @@
         class="mt-8 mb-12"
         @season-selected="(s) => setSelectedSeason(s)"
         @match-selected="(m) => setSelectedMatch(m)"
-        @match-added="(m) => addMatch(m)"
         @participant-selected="(p) => selectedParticipant = p"
         @notify="notify($event)"
       />
@@ -113,12 +112,6 @@ export default Vue.extend({
     },
     setSelectedMatch (matchId: string) {
       this.selectedMatchId = matchId
-    },
-    addMatch (newMatch : Match) {
-      if (this.selectedSeason) {
-        const newId = this.$database.addMatch(newMatch, this.selectedSeason.id)
-        this.setSelectedMatch(newId)
-      }
     },
     rollRoles () {
       if (this.createdState) {
