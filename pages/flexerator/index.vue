@@ -14,9 +14,9 @@ export default Vue.extend({
   head: {
     title: 'Flexerator - LoL Randomizer',
     meta: [{
-      hid: 'Flexerator - Random Roles & Champions for League of Legends',
-      name: 'Flexerator - Random Roles & Champions for League of Legends',
-      description: 'Create a match and let Flexerator randomly select roles and champions for you and your friends.'
+      hid: 'description',
+      name: 'description',
+      content: 'Create a match and let Flexerator randomly select roles and champions for you and your friends.'
     }],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/icoGradientFlex.ico' }

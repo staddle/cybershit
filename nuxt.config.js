@@ -1,3 +1,5 @@
+import { firebaseConfig, recaptchaConfig } from '~/.firebaseConfig.js'
+
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
@@ -24,17 +26,12 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    /* 'assets/css/bootstrapOverride.scss',
-    'assets/css/main.scss' */
-    // '~/assets/quasar/quasar.prod.css',
-    // '~/assets/quasar/google.css',
     '@fortawesome/fontawesome-svg-core/styles.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '~/plugins/fontawesome.js',
-    // '~/plugins/quasar.js',
     '~/plugins/database.ts'
   ],
 
@@ -53,31 +50,10 @@ export default {
     '@nuxtjs/recaptcha',
     [
       '@nuxtjs/firebase',
-      {
-        config: {
-          ***REMOVED***
-          ***REMOVED***
-          ***REMOVED***
-          ***REMOVED***
-          ***REMOVED***
-          ***REMOVED***
-          ***REMOVED***
-          ***REMOVED***
-        },
-        services: {
-          database: true,
-          analytics: true,
-          appCheck: true
-        }
-      }
+      firebaseConfig
     ]
   ],
-  recaptcha: {
-    hideBadge: false, // Hide badge element (v3 & v2 via size=invisible)
-    mode: 'base', // Mode: 'base', 'enterprise'
-    ***REMOVED***, // Development Site key for requests
-    version: 3 // Version
-  },
+  recaptcha: recaptchaConfig,
   purgeCSS: {
     whitelistPatterns: [/svg.*/, /fa.*/]
   },
