@@ -273,6 +273,6 @@ export default Vue.extend({
   transition: all 0.1s ease-in;
 }
 .tooltip:hover .tooltip-shown{
-  opacity: 100%;
+  opacity: 1;
 }
 </style>
