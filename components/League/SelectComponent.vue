@@ -44,7 +44,7 @@
       </div>
       <div v-if="addingMatch" class="fixed bg-black bg-opacity-40 z-10 top-0 left-0 w-screen h-screen flex justify-center items-center">
         <div class="bg-slate-800 rounded-md border border-teal-600 h-fit py-4 relative px-4">
-          <button class="absolute top-0 right-0 pr-2 pt-1 text-teal-400 hover:text-teal-600 w-6 h-6" @click.prevent="addingMatch = false">
+          <button class="absolute top-0 right-0 pr-2 pt-1 text-teal-400 hover:text-teal-600 w-6 h-6" @click.prevent="closeAddingMatch()">
             <FontAwesomeIcon icon="xmark" />
           </button>
           <h1 class="text-lg">
@@ -233,8 +233,20 @@ export default Vue.extend({
         return match.name
       }
     },
+    closeAddingMatch () {
+      this.addingMatch = false
+      this.selectedMatch = ''
+    },
     toggleDetails () {
-      this.detailsShown = !this.detailsShown
+      if (this.selectedMatch !== '') {
+        if (this.selectedParticipant !== '') {
+          this.detailsShown = !this.detailsShown
+        } else {
+          this.$emit('notify', 'Please select a participant first...')
+        }
+      } else {
+        this.$emit('notify', 'Please select a match first...')
+      }
     },
     getRoleName (role: Role) {
       switch (role) {
