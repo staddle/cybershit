@@ -1,7 +1,5 @@
 <template>
-  <div class="flex flex-col border-blue-600 border rounded-md p-4 gap-2">
-    <h1 class="font-bold text-xl mb-2">{{ question.title }}</h1>
-    <p>{{ question.description }}</p>
+  <div class="flex flex-col">
     <div class="flex flex-row gap-4">
       <label v-if="question.label" class="" :for="`text-question-${question.id}`">{{ question.label }}</label>
       <textarea :id="`text-question-${question.id}`" v-model="answer" class="border border-blue-600 flex-grow rounded-md p-2" />

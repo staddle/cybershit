@@ -1,4 +1,4 @@
-import { firebaseConfig, recaptchaConfig } from '~/.firebaseConfig.js'
+import firebaseConfig from './firebaseConfig.json'
 
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
@@ -50,10 +50,25 @@ export default {
     '@nuxtjs/recaptcha',
     [
       '@nuxtjs/firebase',
-      firebaseConfig
+      {
+        config: firebaseConfig.fb,
+        services: {
+          database: {
+            emulatorPort: 9000,
+            emulatorHost: 'localhost'
+          },
+          analytics: true,
+          appCheck: true
+        }
+      }
     ]
   ],
-  recaptcha: recaptchaConfig,
+  recaptcha: {
+    hideBadge: firebaseConfig.rc.hideBadge,
+    mode: firebaseConfig.rc.mode,
+    siteKey: firebaseConfig.rc.siteKey,
+    version: firebaseConfig.rc.version
+  },
   purgeCSS: {
     whitelistPatterns: [/svg.*/, /fa.*/]
   },

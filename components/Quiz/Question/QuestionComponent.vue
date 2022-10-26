@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <div class="flex flex-col border-blue-600 border rounded-md p-4 gap-2">
+    <h1 class="font-bold text-xl mb-2">
+      {{ question.title }}
+    </h1>
+    <p>{{ question.description }}</p>
     <QuizQuestionMultipleChoiceQuestion v-if="isMultipleChoiceQuestion" :question="question" />
     <QuizQuestionTextQuestion v-if="isTextQuestion" :question="question" />
   </div>
