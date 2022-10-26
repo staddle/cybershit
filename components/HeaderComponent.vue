@@ -1,6 +1,6 @@
 <template>
-  <nav class="nav navbar">
-    <span>BrandName</span>
+  <nav class="flex flex-row justify-between border-b border-b-blue-600">
+    <span>QUIZ</span>
     <AuthLoginStatusComponent />
   </nav>
 </template>
@@ -10,9 +10,3 @@ export default {
 
 }
 </script>
-
-<style>
-.nav{
-  border-bottom: solid 1px #999;
-}
-</style>

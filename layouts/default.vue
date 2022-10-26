@@ -1,8 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div>
+  <div class="flex flex-col min-h-screen justify-between">
     <HeaderComponent />
-    <Nuxt />
+    <Nuxt class="flex-grow" />
     <FooterComponent />
   </div>
 </template>

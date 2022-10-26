@@ -26,17 +26,17 @@
 
 <script>
 export default {
-    data () {
-        return {
-            scores: [
-                { id: 1, name: 'John', score: 100 },
-                { id: 2, name: 'Jane', score: 200 },
-                { id: 3, name: 'Jack', score: 300 },
-                { id: 4, name: 'Jill', score: 400 },
-                { id: 5, name: 'Joe', score: 500 }
-            ]
-        }
+  data () {
+    return {
+      scores: [
+        { id: 1, name: 'John', score: 100 },
+        { id: 2, name: 'Jane', score: 200 },
+        { id: 3, name: 'Jack', score: 300 },
+        { id: 4, name: 'Jill', score: 400 },
+        { id: 5, name: 'Joe', score: 500 }
+      ]
     }
+  }
 }
 </script>
 
