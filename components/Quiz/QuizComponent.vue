@@ -5,7 +5,7 @@
       <span class="text-slate-400 text-sm self-end">by {{ quiz.owner.username }}</span>
     </div>
     <hr class="border-blue-600">
-    <div>
+    <div class="flex flex-col gap-4">
       <QuestionComponent v-for="question in quiz.questions" :key="question.id" :question="question" />
     </div>
   </div>

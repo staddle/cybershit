@@ -42,13 +42,10 @@
               Available soon
             </div>
           </div>
-          <div class="flex flex-row justify-between">
-            <button class="bg-blue-600 rounded-lg text-white py-2 px-4 mr-2 w-full hover:bg-blue-500 active:bg-blue-700 focus-visible:outline-none" @click="newsletterPopOut=!newsletterPopOut">
-              <FontAwesomeIcon :icon="['fas', 'envelope']" class="mr-1" /> Newsletter
-            </button>
-            <button class="bg-blue-100 rounded-lg  py-2 px-4 w-full hover:bg-sky-100 active:bg-blue-200 focus-visible:outline-none" @click="goToGithub()">
-              <FontAwesomeIcon :icon="['fas', 'user']" class="mr-1" /> Who am I?
-            </button>
+          <div class="flex flex-row justify-between gap-2">
+            <ComponentButton class="flex-1" type="primary" text="Newsletter" icon="envelope" @click="newsletterPopOut=!newsletterPopOut" />
+            <ComponentButton class="flex-1" type="secondary" text="Who am I?" icon="user" @click="goToGithub()" />
+            <ComponentRouterLink class="flex-1" type="tertiary" text="Try it out" icon="play" to="/quiz" />
           </div>
           <div v-if="newsletterPopOut">
             <div class="grid grid-flow-row mt-8" method="get">

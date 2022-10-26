@@ -11,6 +11,10 @@
         {{ option.name }}
       </label>
     </div>
+    <div class="flex flex-row gap-4 mt-2">
+      <ComponentButton type="primary" class="flex-1" text="Submit" @click="submit()" />
+      <ComponentButton type="secondary" class="flex-1" text="Skip" @click="skip()" />
+    </div>
   </div>
 </template>
 

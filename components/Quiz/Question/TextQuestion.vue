@@ -5,8 +5,8 @@
       <textarea :id="`text-question-${question.id}`" v-model="answer" class="border border-blue-600 flex-grow rounded-md p-2" />
     </div>
     <div class="flex flex-row gap-4 mt-2">
-      <ComponentButtonPrimary class="flex-1" text="Submit" @click="submit()" />
-      <ComponentButtonSecondary class="flex-1" text="Skip" @click="skip()" />
+      <ComponentButton type="primary" class="flex-1" text="Submit" @click="submit()" />
+      <ComponentButton type="secondary" class="flex-1" text="Skip" @click="skip()" />
     </div>
   </div>
 </template>

@@ -26,9 +26,9 @@ export class Tools {
       description: 'Choose the correct answer',
       options: [
         { id: 0, name: 'Paris', correct: true } as AnswerOption,
-        { id: 0, name: 'Berlin', correct: false } as AnswerOption,
-        { id: 0, name: 'London', correct: false } as AnswerOption,
-        { id: 0, name: 'Warsaw', correct: false } as AnswerOption
+        { id: 1, name: 'Berlin', correct: false } as AnswerOption,
+        { id: 2, name: 'London', correct: false } as AnswerOption,
+        { id: 3, name: 'Warsaw', correct: false } as AnswerOption
       ] as AnswerOption[],
       correctAnswers: 1
     } as MultipleChoiceQuestion
