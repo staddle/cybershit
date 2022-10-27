@@ -12,45 +12,34 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup>
 
 import { Champion } from '~/model/Champion'
 
-export default Vue.extend({
-  name: 'ChampIcon',
-  props: {
-    champ: {
-      type: Object as () => Champion,
-      required: true
-    },
-    notPlayable: {
-      type: Boolean,
-      default: false
-    },
-    width: {
-      type: String,
-      default: '50px'
-    },
-    height: {
-      type: String,
-      default: '50px'
-    },
-    clickable: {
-      type: Boolean,
-      default: true
-    }
-  },
-  methods: {
-    select () {
-      if (this.clickable) {
-        if (this.notPlayable) {
-          this.$emit('notify', 'You already played this champion previously or someone else picked it.')
-        } else {
-          this.$emit('select-champion')
-        }
-      }
+export interface Props {
+    champ: Champion,
+    notPlayable?: boolean,
+    width?: string,
+    height?: string,
+    clickable?: boolean,
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    notPlayable: false,
+    width: '50px',
+    height: '50px',
+    clickable: true
+})
+
+const { champ, notPlayable, width, height, clickable } = toRefs(props)
+
+function select () {
+  if (this.clickable) {
+    if (this.notPlayable) {
+      this.$emit('notify', 'You already played this champion previously or someone else picked it.')
+    } else {
+      this.$emit('select-champion')
     }
   }
-})
+}
 </script>

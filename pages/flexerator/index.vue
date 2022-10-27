@@ -5,11 +5,8 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue'
-
-export default Vue.extend({
-  name: 'FlexeratorPage',
+<script lang="ts" setup>
+definePageMeta({
   layout: 'none',
   head: {
     title: 'Flexerator - LoL Randomizer',
@@ -22,12 +19,13 @@ export default Vue.extend({
       { rel: 'icon', type: 'image/x-icon', href: '/icoGradientFlex.ico' }
     ]
   },
-  async mounted () {
-    try {
-      await this.$fire.appCheck.activate('6LcpH_8hAAAAADtqaMfhMoDlujroU70KL2ixcDBa')
-    } catch (e) {
-      // console.error(e)
-    }
+})
+
+onMounted( async () => {
+  try {
+    await this.$fire.appCheck.activate('6LcpH_8hAAAAADtqaMfhMoDlujroU70KL2ixcDBa')
+  } catch (e) {
+    // console.error(e)
   }
 })
 </script>

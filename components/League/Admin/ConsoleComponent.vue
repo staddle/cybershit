@@ -34,48 +34,41 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup>
 import { Season } from '~/model/Season'
 
-export default Vue.extend({
-  name: 'LeagueAdminConsole',
-  data () {
-    return {
-      selectedSeasonIndex: 'new',
-      seasons: [] as Season[],
-      selectedSeason: null as Season | null,
-      loading: true
-    }
-  },
-  watch: {
-    selectedSeasonIndex (val) {
-      if (val === 'new') {
-        this.selectedSeason = null
-      } else {
-        const tempSeason = this.seasons.find((x : Season) => x.id === this.selectedSeasonIndex)
-        if (tempSeason) { this.selectedSeason = tempSeason } else { this.selectedSeason = null }
-      }
-    }
-  },
-  mounted () {
-    this.refreshSeasons()
-  },
-  methods: {
-    refreshSeasons () {
-      this.$database.getSeasons().then((seasons: Season[]) => {
-        this.loading = false
-        this.seasons = seasons
-        if (this.seasons && this.seasons.length > 0) {
-          this.selectedSeasonIndex = this.seasons[0].id.toString()
-        }
-      })
-    },
-    seasonAdded (newSeason : Season) {
-      const newId = this.$database.addSeason(newSeason)
-      this.refreshSeasons()
-      this.selectedSeasonIndex = newId
-    }
+
+const selectedSeasonIndex = ref('new')
+const seasons = ref<Season[]>([])
+const selectedSeason = ref<Season>(null)
+const loading = ref(true)
+
+watch(selectedSeasonIndex, (val) => {
+  if (val === 'new') {
+    selectedSeason.value = null
+  } else {
+    const tempSeason = seasons.value.find((x : Season) => x.id === selectedSeasonIndex.value)
+    if (tempSeason) { selectedSeason.value = tempSeason } else { selectedSeason.value = null }
   }
 })
+
+refreshSeasons()
+
+const { $database } = useNuxtApp()
+
+function refreshSeasons () {
+  $database().getSeasons().then((seasonsRet: Season[]) => {
+    loading.value = false
+    seasons.value = seasonsRet
+    if (seasons.value && seasons.value.length > 0) {
+      selectedSeasonIndex.value = seasons.value[0].id.toString()
+    }
+  })
+}
+
+function seasonAdded (newSeason : Season) {
+  const newId = $database().addSeason(newSeason)
+  refreshSeasons()
+  selectedSeasonIndex.value = newId
+}
 </script>

@@ -16,21 +16,15 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup>
 import { ChampionParticipant } from '~/model/Season'
 
-export default Vue.extend({
-  name: 'ChampionDetail',
-  props: {
-    participant: {
-      type: Object as () => ChampionParticipant,
-      required: true
-    },
-    isOwn: {
-      type: Boolean,
-      required: true
-    }
-  }
-})
+export interface Props {
+  participant: ChampionParticipant,
+  isOwn: Boolean,
+}
+
+const props = defineProps<Props>()
+
+const { participant, isOwn } = toRefs(props)
 </script>

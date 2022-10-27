@@ -1,7 +1,16 @@
-import { Plugin } from '@nuxt/types'
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, child, get, set, onValue } from "firebase/database";
 import { ChampionParticipant, Match, MatchState, Participant, Role, Season } from '~/model/Season'
 import { Champion } from '~/model/Champion'
 import championRoles from '~/assets/championRoles.js'
+import firebaseConfig from '../firebaseConfig.json'
+
+// TODO: Replace the following with your app's Firebase project configuration
+const firebaseConfigObject = firebaseConfig.fb;
+
+const app = initializeApp(firebaseConfigObject);
+const db = getDatabase(app);
+const dbRef = ref(getDatabase())
 
 export interface Database {
   getSeasons: () => Promise<Season[]>,
@@ -23,230 +32,205 @@ interface ChampionRole {
   roles: Role[]
 }
 
-declare module 'vue/types/vue' {
-  // this.$myInjectedFunction inside Vue components
-  interface Vue {
-    $database: Database
+declare module '#app' {
+  interface NuxtApp {
+    $database (): Database
   }
 }
 
-declare module '@nuxt/types' {
-  // nuxtContext.app.$myInjectedFunction inside asyncData, fetch, plugins, middleware, nuxtServerInit
-  interface NuxtAppOptions {
-    $database: Database
-  }
-  // nuxtContext.$myInjectedFunction
-  interface Context {
-    $database: Database
+declare module '@vue/runtime-core' {
+  interface ComponentCustomProperties {
+    $database (): Database
   }
 }
 
-declare module 'vuex/types/index' {
-  // this.$myInjectedFunction inside Vuex stores
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface Store<S> {
-    $database: Database
-  }
-}
-
-const myPlugin : Plugin = ({ app }, inject) => {
-  const getSeasons = async () : Promise<Season[]> => {
-    const snapshot = await app.$fire.database.ref('lol/seasons').get()
-    if (snapshot.val()) {
-      const mapped : Season[] = Object.values(snapshot.val())
-      mapped.map((value: Season) => {
-        if (value.matches) {
-          value.matches = Object.values(value.matches)
+export default defineNuxtPlugin((nuxtApp) => {
+  nuxtApp.provide('database', () => {
+    const getSeasons = async () : Promise<Season[]> => {
+      const ret = get(child(dbRef, 'lol/seasons')).then((snapshot) => {
+        if (snapshot.exists()) {
+          const mapped : Season[] = Object.values(snapshot.val())
+          mapped.map((value: Season) => {
+            if (value.matches) {
+              value.matches = Object.values(value.matches)
+            }
+            return value
+          })
+          return mapped
         }
-        return value
+        return []
       })
-      return mapped
+      return ret;
     }
-    return []
-  }
 
-  const listenForSeason = (seasonId: string, callback: (season: Season) => void) => {
-    app.$fire.database.ref(`lol/seasons/${seasonId}`).on('value', (snapshot) => {
-      if (snapshot.val()) {
-        const season : Season = snapshot.val()
-        if (season.matches) {
-          season.matches = Object.values(season.matches)
-        }
-        callback(season)
-      }
-    })
-  }
-
-  const getSeason = async (id: string) : Promise<Season> => {
-    const snapshot = await app.$fire.database.ref(`lol/seasons/${id}`).get()
-    return snapshot.val() ? snapshot.val() as Season : {} as Season
-  }
-
-  const addSeason = (newSeason: Season) => {
-    const newSeasonRef = app.$fire.database.ref('lol/seasons').push()
-    newSeason.id = newSeasonRef.key ?? ''
-    newSeasonRef.set(newSeason)
-    return newSeason.id
-  }
-
-  const addMatch = (match: Match, selectedSeasonId: string) : string => {
-    const newMatchRef = app.$fire.database.ref(`lol/seasons/${selectedSeasonId}/matches`).push()
-    match.id = newMatchRef.key ?? ''
-    newMatchRef.set(match)
-    return newMatchRef.key ?? ''
-  }
-
-  const getParticipants = async () : Promise<Participant[]> => {
-    const snapshot = await app.$fire.database.ref('lol/participants').get()
-    if (snapshot.val() != null) {
-      return Object.values(snapshot.val())
-    }
-    return []
-  }
-
-  const addParticipant = (name: string) : void => {
-    const newParticipantRef = app.$fire.database.ref('lol/participants').push()
-    newParticipantRef.set({
-      id: newParticipantRef.key,
-      name
-    })
-  }
-
-  const refreshChampions = async () : Promise<void> => {
-    const championDataRef = app.$fire.database.ref('lol/champions').push()
-    const championRoles : ChampionRole[] = fetchChampionRoles()
-    await fetch('http://ddragon.leagueoflegends.com/cdn/12.6.1/data/en_US/champion.json')
-      .then(res => res.json())
-      .then((res) => {
-        const champions : Champion[] = Object.values(res.data)
-        champions.map((champion: Champion) => {
-          champion.roles = championRoles.find((role: ChampionRole) => role.name === champion.name)?.roles ?? []
-          return champion
-        })
-        const returnValue = Object.fromEntries(champions.map((c : Champion) => ([c.id, c])))
-        championDataRef.set(returnValue)
-      })
-  }
-
-  type TempChamp = {name: string, champ: Champion}
-
-  const getChampionList = async () : Promise<Champion[]> => {
-    const snapshot = await app.$fire.database.ref('lol/champions').get()
-    if (snapshot.val() != null) {
-      const temp : TempChamp = Object.values(snapshot.val())[0] as TempChamp
-      return Object.values(temp) as Champion[]
-    } else {
-      await refreshChampions()
-      return await getChampionList()
-    }
-  }
-
-  const getChampion = async (name: string) : Promise<Champion | null> => {
-    const snapshot = await app.$fire.database.ref(`lol/champions/${name}`).get()
-    if (snapshot.val()) { return snapshot.val() }
-    return null
-  }
-
-  const rollRoles = async (seasonId: string, matchId: string) : Promise<Match> => {
-    const dbRef = app.$fire.database.ref(`lol/seasons/${seasonId}/matches/${matchId}`)
-    const snapshot = await dbRef.get()
-    if (snapshot.val()) {
-      const match = snapshot.val() as Match
-      const participants = match.champions
-      const roles : Role[] = [Role.TOP, Role.JUNGLE, Role.MID, Role.BOT, Role.SUPPORT]
-      const randomRoles : Role[] = roles.sort(() => Math.random() - 0.5)
-      const randomParticipants = participants.sort(() => Math.random() - 0.5)
-      randomParticipants.map((participant: ChampionParticipant, index: number) => {
-        participant.role = randomRoles[index]
-        return participant
-      })
-      match.champions = randomParticipants
-      match.state = MatchState.ROLLED
-      dbRef.set(match)
-      return match
-    }
-    return {} as Match
-  }
-
-  const selectChampion = async (seasonId: string, matchId: string, participantId: string, champion: Champion) : Promise<Match> => {
-    const dbRef = app.$fire.database.ref(`lol/seasons/${seasonId}/matches/${matchId}`)
-    const snapshot = await dbRef.get()
-    if (snapshot.val()) {
-      const match = snapshot.val() as Match
-      match.champions = match.champions.map((participant: ChampionParticipant) => {
-        if (participant.participant.id === participantId) {
-          participant.champion = champion
-        }
-        return participant
-      })
-      dbRef.set(match)
-      return match
-    }
-    return {} as Match
-  }
-
-  const fetchChampionRoles = (): ChampionRole[] => {
-    return championRoles.map((x) => {
-      return {
-        name: x.name,
-        roles: x.roles.map((y) => {
-          switch (y) {
-            case 'top':
-              return Role.TOP
-            case 'jungle':
-              return Role.JUNGLE
-            case 'mid':
-              return Role.MID
-            case 'bot':
-              return Role.BOT
-            case 'support':
-              return Role.SUPPORT
+    const listenForSeason = (seasonId: string, callback: (season: Season) => void) => {
+      const seasonRef = ref(db, `lol/seasons/${seasonId}`)
+      onValue(seasonRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const season : Season = snapshot.val()
+          if (season.matches) {
+            season.matches = Object.values(season.matches)
           }
-          return Role.TOP
-        })
-      } as ChampionRole
-    })
-    /* const result = await fetch('https://leagueoflegends.fandom.com/wiki/List_of_champions_by_draft_position')
-    const text = await result.text()
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(text, 'text/html')
-    return Object.values(doc.querySelectorAll('.article-table')[0]
-      .children[1].children)
-      .map((x) => {
-        const tableCols = Object.values(x.children)
-        const name = tableCols[0].attributes[0].value
-        const roles = {
-          top: tableCols[1].attributes.length > 0,
-          jungle: tableCols[2].attributes.length > 0,
-          mid: tableCols[3].attributes.length > 0,
-          bot: tableCols[4].attributes.length > 0,
-          support: tableCols[5].attributes.length > 0
+          callback(season)
         }
-        return { name, roles } as ChampionRole
+      })
+    }
+
+    const getSeason = async (id: string) : Promise<Season> => {
+      const ret = get(child(dbRef, `lol/seasons/${id}`)).then((snapshot) => {
+        return snapshot.exists() ? snapshot.val() as Season : {} as Season
+      })
+      return ret
+    }
+
+    const addSeason = (newSeason: Season) => {
+      const newSeasonRef = ref(db, 'lol/seasons')
+      newSeason.id = newSeasonRef.key ?? ''
+      set(newSeasonRef, newSeason)
+      return newSeason.id
+    }
+
+    const addMatch = (match: Match, selectedSeasonId: string) : string => {
+      const newMatchRef = ref(db, `lol/seasons/${selectedSeasonId}/matches`)
+      match.id = newMatchRef.key ?? ''
+      set(newMatchRef, match)
+      return newMatchRef.key ?? ''
+    }
+
+    const getParticipants = async () : Promise<Participant[]> => {
+      return get(child(dbRef, 'lol/participants')).then((snapshot) => {
+        if (snapshot.exists()) {
+          return Object.values(snapshot.val())
+        }
+      })
+    }
+
+    const addParticipant = (name: string) : void => {
+      const newParticipantRef = ref(db, 'lol/participants')
+      set(newParticipantRef, {
+        id: newParticipantRef.key,
+        name
+      })
+    }
+
+    const refreshChampions = async () : Promise<void> => {
+      const championDataRef = ref(db, 'lol/champions')
+      const championRoles : ChampionRole[] = fetchChampionRoles()
+      await fetch('http://ddragon.leagueoflegends.com/cdn/12.6.1/data/en_US/champion.json')
+        .then(res => res.json())
+        .then((res) => {
+          const champions : Champion[] = Object.values(res.data)
+          champions.map((champion: Champion) => {
+            champion.roles = championRoles.find((role: ChampionRole) => role.name === champion.name)?.roles ?? []
+            return champion
+          })
+          const returnValue = Object.fromEntries(champions.map((c : Champion) => ([c.id, c])))
+          set(championDataRef, returnValue)
+        })
+    }
+
+    type TempChamp = {name: string, champ: Champion}
+
+    const getChampionList = async () : Promise<Champion[]> => {
+      return get(child(dbRef, 'lol/champions')).then((snapshot) => {
+        if (snapshot.exists) {
+          const temp : TempChamp = Object.values(snapshot.val())[0] as TempChamp
+          return Object.values(temp) as Champion[]
+        } else {
+          return refreshChampions().then(getChampionList)
+        }
+      })
+    }
+
+    const getChampion = async (name: string) : Promise<Champion | null> => 
+      get(child(dbRef, `lol/champions/${name}`)).then((snapshot) => {
+        return snapshot.exists() ? snapshot.val() : null
       })
 
-      Object.values(document.querySelectorAll(".article-table")[0].children[1].children).map((x,i) => {
-        const tableCols = Object.values(x.children)
-        const name = tableCols[0].attributes[0].value
-        const roles = ['top', 'jungle', 'mid', 'bot', 'support']
-        return {name, roles: tableCols.filter((x,i)=>i>0&&i<6).map((x,i)=>x.attributes.length>0?roles[i]:0).filter(x=>x!=0)}
-      })  */
-  }
+    const rollRoles = async (seasonId: string, matchId: string) : Promise<Match> => {
+      return get(child(dbRef, `lol/seasons/${seasonId}/matches/${matchId}`)).then((snapshot) => {
+        if (snapshot.exists()) {
+          const match = snapshot.val() as Match
+          const participants = match.champions
+          const roles : Role[] = [Role.TOP, Role.JUNGLE, Role.MID, Role.BOT, Role.SUPPORT]
+          const randomRoles : Role[] = roles.sort(() => Math.random() - 0.5)
+          const randomParticipants = participants.sort(() => Math.random() - 0.5)
+          randomParticipants.map((participant: ChampionParticipant, index: number) => {
+            participant.role = randomRoles[index]
+            return participant
+          })
+          match.champions = randomParticipants
+          match.state = MatchState.ROLLED
+          set(ref(db, `lol/seasons/${seasonId}/matches/${matchId}`), match)
+          return match
+        }
+        return {} as Match
+      })
+    }
 
-  inject('database', {
-    getSeasons,
-    getSeason,
-    listenForSeason,
-    addSeason,
-    addMatch,
-    getParticipants,
-    addParticipant,
-    refreshChampions,
-    getChampion,
-    getChampionList,
-    rollRoles,
-    selectChampion
-  } as Database)
-}
+    const selectChampion = async (seasonId: string, matchId: string, participantId: string, champion: Champion) : Promise<Match> => {
+      return get(child(dbRef, `lol/seasons/${seasonId}/matches/${matchId}`)).then((snapshot) => {
+        if (snapshot.exists()) {
+          const match = snapshot.val() as Match
+          match.champions = match.champions.map((participant: ChampionParticipant) => {
+            if (participant.participant.id === participantId) {
+              participant.champion = champion
+            }
+            return participant
+          })
+          set(ref(db, `lol/seasons/${seasonId}/matches/${matchId}`), match)
+          return match
+        }
+        return {} as Match
+      })
+    }
 
-export default myPlugin
+    const fetchChampionRoles = (): ChampionRole[] => {
+      return championRoles.map((x) => {
+        return {
+          name: x.name,
+          roles: x.roles.map((y) => {
+            switch (y) {
+              case 'top':
+                return Role.TOP
+              case 'jungle':
+                return Role.JUNGLE
+              case 'mid':
+                return Role.MID
+              case 'bot':
+                return Role.BOT
+              case 'support':
+                return Role.SUPPORT
+            }
+            return Role.TOP
+          })
+        } as ChampionRole
+      })
+      /* const result = await fetch('https://leagueoflegends.fandom.com/wiki/List_of_champions_by_draft_position')
+      const text = await result.text()
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(text, 'text/html')
+      return Object.values(doc.querySelectorAll('.article-table')[0]
+        .children[1].children)
+        .map((x) => {
+          const tableCols = Object.values(x.children)
+          const name = tableCols[0].attributes[0].value
+          const roles = {
+            top: tableCols[1].attributes.length > 0,
+            jungle: tableCols[2].attributes.length > 0,
+            mid: tableCols[3].attributes.length > 0,
+            bot: tableCols[4].attributes.length > 0,
+            support: tableCols[5].attributes.length > 0
+          }
+          return { name, roles } as ChampionRole
+        })
+
+        Object.values(document.querySelectorAll(".article-table")[0].children[1].children).map((x,i) => {
+          const tableCols = Object.values(x.children)
+          const name = tableCols[0].attributes[0].value
+          const roles = ['top', 'jungle', 'mid', 'bot', 'support']
+          return {name, roles: tableCols.filter((x,i)=>i>0&&i<6).map((x,i)=>x.attributes.length>0?roles[i]:0).filter(x=>x!=0)}
+        })  */
+    }
+  })
+})

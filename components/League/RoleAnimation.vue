@@ -7,21 +7,18 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup>
+export interface Props {
+  delay?: number
+}
 
-export default Vue.extend({
-  name: 'RoleAnimation',
-  props: {
-    delay: {
-      type: Number,
-      default: 0
-    }
-  },
-  data: () => ({
-    roles: [4, 0, 1, 2, 3, 4, 0]
-  })
+const props = withDefaults(defineProps<Props>(), {
+  delay: 0
 })
+
+const { delay } = toRefs(props)
+
+const roles = ref([4, 0, 1, 2, 3, 4, 0])
 </script>
 
 <style>

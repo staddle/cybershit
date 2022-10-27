@@ -26,31 +26,24 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup>
 
-export default Vue.extend({
-  name: 'LoadingComponent',
-  props: {
-    type: {
-      type: String,
-      default: ''
-    }
-  },
-  data () {
-    return {
-      typeData: ''
-    }
-  },
-  mounted: function () {
-    if (this.type === '') {
-      const types = ['gradient', 'squares']
-      this.typeData = types[Math.floor(Math.random() * types.length)]
-    } else {
-      this.typeData = this.type
-    }
+const props = defineProps({
+  type: {
+    type: String,
+    default: ''
   }
 })
+
+const { type } = toRefs(props)
+
+const typeData = ref('')
+if (type.value === '') {
+  const types = ['gradient', 'squares']
+  typeData.value = types[Math.floor(Math.random() * types.length)]
+} else {
+  typeData.value = type.value
+}
 </script>
 
 <style>

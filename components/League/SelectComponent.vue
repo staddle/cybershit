@@ -97,173 +97,177 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup>
 import { Champion } from '~/model/Champion'
 import { ChampionParticipant, Match, MatchState, Participant, Role, Season } from '~/model/Season'
 
-export default Vue.extend({
-  name: 'SelectComponent',
-  props: {
-    seasons: {
-      type: Array as () => Season[],
-      required: true
-    }
-  },
-  data () {
-    return {
-      selectedSeason: '',
-      selectedParticipant: '',
-      selectedMatch: '',
-      playersForMatch: [] as Participant[],
-      addingMatch: false,
-      name: '',
-      detailsShown: false
-    }
-  },
-  computed: {
-    players (): Participant[] {
-      return this.selectedSeasonObject?.matches?.find(x => x.id === this.selectedMatch)?.champions.map(x => x.participant) ?? []
-    },
-    selectedSeasonObject (): Season | undefined {
-      return this.seasons.find((x: Season) => x.id === this.selectedSeason)
-    },
-    matches (): Match[] {
-      return this.selectedSeasonObject?.matches ?? []
-    },
-    isMatchToday (): Match[] {
-      return this.matches.filter((x: Match) => new Date(x.date).toDateString() === new Date().toDateString())
-    },
-    champsOfParticipant (): {champ: Champion, date: Date, role: Role}[] {
-      return this.selectedSeasonObject?.matches?.map((x) => {
-        const champP = x.champions.find(x => x.participant.name === this.selectedParticipant)
-        return { champ: champP?.champion ?? {} as Champion, date: new Date(x.date), role: champP?.role ?? Role.TOP }
-      }).filter(x => x.champ.id) ?? []
-    }
-  },
-  watch: {
-    seasons (newSeasons: Season[]) {
-      if (newSeasons.length > 0) {
-        this.selectedSeason = newSeasons[0].id
-      }
-    },
-    selectedSeason (newSeason) {
-      if (newSeason) {
-        this.$emit('season-selected', newSeason)
-        const matches = this.seasons.find((x: Season) => x.id === newSeason)?.matches
-        if (matches) {
-          if (matches.length === 0) {
-            this.addingMatch = true
-          } else if (matches.length === 1) {
-            this.selectedMatch = matches[0].id
-          } else if (this.isMatchToday.length > 0) {
-            this.selectedMatch = this.isMatchToday[0].id
-          } else {
-            this.selectedMatch = matches[0].id
-          }
-        }
-      }
-    },
-    selectedParticipant (newParticipant : string) {
-      if (newParticipant) {
-        this.$emit('participant-selected', this.players.find((x: Participant) => x.name === newParticipant))
-        // localStorage
-        localStorage.setItem('selectedParticipant', newParticipant)
-      }
-    },
-    selectedMatch (newMatch) {
-      if (newMatch) {
-        if (newMatch === 'new') {
-          this.addingMatch = true
-        } else {
-          this.selectedParticipant = ''
-          this.$emit('match-selected', newMatch)
-          this.$emit('participant-selected', null)
-          this.getLocalStorage()
-        }
-      }
-    }
-  },
-  mounted () {
-    if (this.seasons.length === 1) {
-      this.selectedSeason = this.seasons[0].id
-    }
-    this.getLocalStorage()
-  },
-  methods: {
-    setParticipants (participants: Participant[]) {
-      this.playersForMatch = participants
-    },
-    getLocalStorage () {
-      const lS = localStorage.getItem('selectedParticipant')
-      if (lS) {
-        this.selectedParticipant = lS?.toString() ?? ''
-        this.$emit('participant-selected', this.players.find((x: Participant) => x.name === this.selectedParticipant))
-      }
-    },
-    addMatch () {
-      if (this.selectedSeasonObject && this.playersForMatch.length > 0) {
-        const newMatch : Match = {
-          id: '',
-          name: this.name,
-          champions: this.playersForMatch.map((p) => {
-            return {
-              champion: null as Champion | null,
-              participant: p
-            } as ChampionParticipant
-          }),
-          date: (Number)(new Date()),
-          state: MatchState.CREATED
-        }
-        const newId = this.$database.addMatch(newMatch, this.selectedSeasonObject.id)
-        this.selectedMatch = newId
-        this.name = ''
-        this.addingMatch = false
+const props = defineProps<{
+  seasons: Season[]
+}>()
+
+const emit = defineEmits<{
+  (e: 'season-selected', season: string): void,
+  (e: 'participant-selected', participant: Participant): void,
+  (e: 'match-selected', match: string): void,
+  (e: 'notify', message: string): void
+}>()
+
+const { seasons } = toRefs(props)
+const selectedSeason = ref('')
+const selectedParticipant = ref('')
+const selectedMatch = ref('')
+const addingMatch = ref(false)
+const name = ref('')
+const detailsShown = ref(false)
+const playersForMatch = ref<Participant[]>([])
+const players = computed(() : Participant[] => {
+  return selectedSeasonObject.value?.matches?.find(x => x.id === selectedMatch.value)?.champions.map(x => x.participant) ?? []
+})
+const selectedSeasonObject = computed((): Season | undefined => {
+  return seasons.value.find((x: Season) => x.id === selectedSeason.value)
+})
+const matches = computed((): Match[] => {
+  return selectedSeasonObject.value?.matches ?? []
+})
+const isMatchToday = computed((): Match[] => {
+  return matches.value.filter((x: Match) => new Date(x.date).toDateString() === new Date().toDateString())
+})
+
+const champsOfParticipant = computed((): {champ: Champion, date: Date, role: Role}[] => {
+  return selectedSeasonObject.value?.matches?.map((x) => {
+    const champP = x.champions.find(x => x.participant.name === selectedParticipant.value)
+    return { champ: champP?.champion ?? {} as Champion, date: new Date(x.date), role: champP?.role ?? Role.TOP }
+  }).filter(x => x.champ.id) ?? []
+})
+
+watch(seasons, (newSeasons: Season[]) => {
+  if (newSeasons.length > 0) {
+    selectedSeason.value = newSeasons[0].id
+  }
+})
+watch(selectedSeason, (newSeason) => {
+  if (newSeason) {
+    emit('season-selected', newSeason)
+    const matches = seasons.value.find((x: Season) => x.id === newSeason)?.matches
+    if (matches) {
+      if (matches.length === 0) {
+        addingMatch.value = true
+      } else if (matches.length === 1) {
+        selectedMatch.value = matches[0].id
+      } else if (isMatchToday.value.length > 0) {
+        selectedMatch.value = isMatchToday.value[0].id
       } else {
-        alert('Please select a season and at least one player')
+        selectedMatch.value = matches[0].id
       }
-    },
-    getMatchName (match: Match) {
-      if (!match.name) {
-        return new Date(match.date).toLocaleDateString()
-      }
-      if (this.matches.filter(x => x.name === match.name).length > 1) {
-        return `${match.name} (${new Date(match.date).toLocaleDateString()})`
-      } else {
-        return match.name
-      }
-    },
-    closeAddingMatch () {
-      this.addingMatch = false
-      this.selectedMatch = ''
-    },
-    toggleDetails () {
-      if (this.selectedMatch !== '') {
-        if (this.selectedParticipant !== '') {
-          this.detailsShown = !this.detailsShown
-        } else {
-          this.$emit('notify', 'Please select a participant first...')
-        }
-      } else {
-        this.$emit('notify', 'Please select a match first...')
-      }
-    },
-    getRoleName (role: Role) {
-      switch (role) {
-        case Role.TOP:
-          return 'Top'
-        case Role.JUNGLE:
-          return 'Jungle'
-        case Role.MID:
-          return 'Mid'
-        case Role.BOT:
-          return 'Bot'
-        case Role.SUPPORT:
-          return 'Support'
-      }
+    }
+}
+})
+watch(selectedParticipant, (newParticipant : string) => {
+  if (newParticipant) {
+    emit('participant-selected', players.value.find((x: Participant) => x.name === newParticipant))
+    // localStorage
+    localStorage.setItem('selectedParticipant', newParticipant)
+  }
+})
+
+watch(selectedMatch, (newMatch) => {
+  if (newMatch) {
+    if (newMatch === 'new') {
+      addingMatch.value = true
+    } else {
+      selectedParticipant.value = ''
+      emit('match-selected', newMatch)
+      emit('participant-selected', null)
+      getLocalStorage()
     }
   }
 })
+
+//mounted
+if (seasons.value.length === 1) {
+  selectedSeason.value = seasons.value[0].id
+}
+getLocalStorage()
+
+//methods
+function setParticipants (participants: Participant[]) {
+  playersForMatch.value = participants
+}
+
+function getLocalStorage () {
+  const lS = localStorage.getItem('selectedParticipant')
+  if (lS) {
+    selectedParticipant.value = lS?.toString() ?? ''
+    emit('participant-selected', this.players.find((x: Participant) => x.name === this.selectedParticipant))
+  }
+}
+
+function addMatch () {
+  if (selectedSeasonObject.value && playersForMatch.value.length > 0) {
+    const newMatch : Match = {
+      id: '',
+      name: this.name,
+      champions: this.playersForMatch.map((p) => {
+        return {
+          champion: null as Champion | null,
+          participant: p
+        } as ChampionParticipant
+      }),
+      date: (Number)(new Date()),
+      state: MatchState.CREATED
+    }
+    const newId = this.$database.addMatch(newMatch, this.selectedSeasonObject.id)
+    this.selectedMatch = newId
+    this.name = ''
+    this.addingMatch = false
+  } else {
+    alert('Please select a season and at least one player')
+  }
+}
+
+function getMatchName (match: Match) {
+  if (!match.name) {
+    return new Date(match.date).toLocaleDateString()
+  }
+  if (matches.value.filter(x => x.name === match.name).length > 1) {
+    return `${match.name} (${new Date(match.date).toLocaleDateString()})`
+  } else {
+    return match.name
+  }
+}
+
+function closeAddingMatch () {
+  addingMatch.value = false
+  selectedMatch.value = ''
+}
+
+function toggleDetails () {
+  if (selectedMatch.value !== '') {
+    if (selectedParticipant.value !== '') {
+      detailsShown.value = !detailsShown.value
+    } else {
+      emit('notify', 'Please select a participant first...')
+    }
+  } else {
+    emit('notify', 'Please select a match first...')
+  }
+}
+
+function getRoleName (role: Role) {
+  switch (role) {
+    case Role.TOP:
+      return 'Top'
+    case Role.JUNGLE:
+      return 'Jungle'
+    case Role.MID:
+      return 'Mid'
+    case Role.BOT:
+      return 'Bot'
+    case Role.SUPPORT:
+      return 'Support'
+  }
+}
+
 </script>
 
 <style>

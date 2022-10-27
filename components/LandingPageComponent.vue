@@ -85,44 +85,35 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup>
 
-export default Vue.extend({
-  data () {
-    return {
-      newsletterPopOut: false,
-      confirmationMessage: '',
-      customerEmail: ''
-    }
-  },
-  async mounted () {
-    try {
-      await this.$fire.appCheck.activate('6LcpH_8hAAAAADtqaMfhMoDlujroU70KL2ixcDBa')
-    } catch (e) {
-      // console.error(e)
-    }
-  },
-  methods: {
-    async addNewsletter (email : string) {
-      const dbRef = this.$fire.database.ref('newsletter')
-      const subscribeTime = new Date().toISOString()
-      try {
-        await dbRef.push({
-          email,
-          date: subscribeTime
-        }).then(() => {
-          this.confirmationMessage = 'Thank you for subscribing!'
-        })
-      } catch (e) {
-        this.confirmationMessage = 'Something went wrong. Please try again later.'
-      }
-    },
-    goToGithub () {
-      window.open('https://github.com/staddle', '_blank')
-    }
+const newsletterPopOut = ref(false)
+const confirmationMessage = ref('')
+const customerEmail = ref('')
+
+try {
+  await this.$fire.appCheck.activate('6LcpH_8hAAAAADtqaMfhMoDlujroU70KL2ixcDBa')
+} catch (e) {
+    // console.error(e)
+}
+async function addNewsletter (email : string) {
+  const dbRef = this.$fire.database.ref('newsletter')
+  const subscribeTime = new Date().toISOString()
+  try {
+    await dbRef.push({
+      email,
+      date: subscribeTime
+    }).then(() => {
+      confirmationMessage.value = 'Thank you for subscribing!'
+    })
+  } catch (e) {
+    confirmationMessage.value = 'Something went wrong. Please try again later.'
   }
-})
+}
+
+function goToGithub () {
+  window.open('https://github.com/staddle', '_blank')
+}
 </script>
 
 <style>

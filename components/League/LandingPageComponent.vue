@@ -52,101 +52,99 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup>
 import { Champion } from '~/model/Champion'
 import { ChampionParticipant, Match, MatchState, Participant, Role, Season } from '~/model/Season'
 
-export default Vue.extend({
-  name: 'LeaguePage',
-  data: () => ({
-    seasons: [] as Season[],
-    selectedSeasonId: '',
-    selectedParticipant: null as Participant | null,
-    selectedMatchId: '',
-    selectedTab: 'overview',
-    loading: true,
-    notification: ''
-  }),
-  computed: {
-    selectedSeason (): Season | undefined {
-      return this.seasons.find((x: Season) => x.id === this.selectedSeasonId)
-    },
-    selectedMatch (): Match | undefined {
-      return this.selectedSeason?.matches.find((x: Match) => x.id === this.selectedMatchId)
-    },
-    createdState (): boolean {
-      return this.selectedParticipant != null && this.selectedMatch?.state === MatchState.CREATED
-    },
-    rolledState (): boolean {
-      return this.selectedParticipant != null && this.selectedMatch?.state === MatchState.ROLLED
-    },
-    role (): Role | undefined {
-      return this.selectedMatch?.champions.filter((x: ChampionParticipant) => x.participant.id === this.selectedParticipant?.id)[0].role
-    },
-    selectedChampion (): Champion | undefined {
-      return this.selectedMatch?.champions.filter((x: ChampionParticipant) => x.participant.id === this.selectedParticipant?.id)[0].champion
-    }
-  },
-  mounted () {
-    this.refreshSeasons()
-  },
-  methods: {
-    refreshSeasons () {
-      this.$database.getSeasons().then((seasons: Season[]) => {
-        this.seasons = seasons
-        this.loading = false
-      })
-    },
-    refreshSelectedSeason () {
-      this.$database.getSeason(this.selectedSeasonId).then((season: Season) => {
-        this.setSeasonInSeasons(season)
-      })
-    },
-    setSeasonInSeasons (season: Season) {
-      this.seasons = this.seasons.map((x: Season) => x.id === season.id ? season : x)
-    },
-    setSelectedSeason (seasonId: string) {
-      this.selectedSeasonId = seasonId
-      this.$database.listenForSeason(seasonId, (season: Season) => this.setSeasonInSeasons(season))
-    },
-    setSelectedMatch (matchId: string) {
-      this.selectedMatchId = matchId
-    },
-    rollRoles () {
-      if (this.createdState) {
-        this.$database.rollRoles(this.selectedSeasonId, this.selectedMatchId)
-      }
-    },
-    championsThatParticipantsHavePlayed (): Champion[] {
-      if (this.selectedParticipant != null) {
-        const selfChamps = this.selectedSeason?.matches
-          .filter((x: Match) => x.champions.filter((y: ChampionParticipant) => y.participant.id === this.selectedParticipant?.id && y.champion).length > 0)
-          .map((x: Match) => x.champions.filter((y: ChampionParticipant) => y.participant.id === this.selectedParticipant?.id)[0].champion ?? {} as Champion) ??
-          []
-        const otherChamps = this.selectedMatch?.champions
-          .filter((x: ChampionParticipant) => x.champion)
-          .map((x: ChampionParticipant) => x.champion) ?? []
-        return [...selfChamps, ...otherChamps]
-      }
-      return []
-    },
-    async selectChampion (champion: Champion) {
-      if (this.selectedParticipant && this.selectedMatch) {
-        const newMatch = await this.$database.selectChampion(this.selectedSeasonId,
-          this.selectedMatchId,
-          this.selectedParticipant.id,
-          champion)
-        if (this.selectedSeason) {
-          this.selectedSeason.matches.find((x: Match) => x.id === newMatch.id)!.champions = newMatch.champions
-        }
-      }
-    },
-    notify (message: string) {
-      this.notification = message
+
+const seasons = ref<Season[]>([])
+const selectedSeasonId = ref('')
+const selectedParticipant = ref<Participant>(null)
+const selectedMatchId = ref('')
+const selectedTab = ref('overview')
+const loading = ref(true)
+const notification = ref('')
+
+const selectedSeason = computed((): Season | undefined => {
+  return seasons.value.find((x: Season) => x.id === selectedSeasonId.value)
+})
+
+const selectedMatch = computed((): Match | undefined => {
+  return selectedSeason.value?.matches.find((x: Match) => x.id === selectedMatchId.value)
+})
+
+const createdState = computed((): boolean => {
+  return selectedParticipant.value != null && selectedMatch.value?.state === MatchState.CREATED
+})
+
+const rolledState = computed((): boolean => {
+  return selectedParticipant.value != null && selectedMatch.value?.state === MatchState.ROLLED
+})
+
+const role = computed((): Role | undefined => {
+  return selectedMatch.value?.champions.filter((x: ChampionParticipant) => x.participant.id === selectedParticipant.value?.id)[0].role
+})
+
+const selectedChampion = computed((): Champion | undefined => {
+  return selectedMatch.value?.champions.filter((x: ChampionParticipant) => x.participant.id === selectedParticipant.value?.id)[0].champion
+})
+
+//mounted
+refreshSeasons()
+
+const { $database } = useNuxtApp()
+
+function refreshSeasons () {
+  $database().getSeasons().then((seasonsReturn: Season[]) => {
+    seasons.value = seasonsReturn
+    loading.value = false
+  })
+}
+
+function setSelectedSeason (seasonId: string) {
+  selectedSeasonId.value = seasonId
+  $database().listenForSeason(seasonId, (season: Season) => this.setSeasonInSeasons(season))
+}
+
+function setSelectedMatch (matchId: string) {
+  selectedMatchId.value = matchId
+}
+
+function rollRoles () {
+  if (createdState.value) {
+    $database().rollRoles(selectedSeasonId.value, selectedMatchId.value)
+  }
+}
+
+function championsThatParticipantsHavePlayed (): Champion[] {
+  if (selectedParticipant.value != null) {
+    const selfChamps = selectedSeason.value?.matches
+      .filter((x: Match) => x.champions.filter((y: ChampionParticipant) => y.participant.id === selectedParticipant.value?.id && y.champion).length > 0)
+      .map((x: Match) => x.champions.filter((y: ChampionParticipant) => y.participant.id === selectedParticipant.value?.id)[0].champion ?? {} as Champion) ??
+      []
+    const otherChamps = selectedMatch.value?.champions
+      .filter((x: ChampionParticipant) => x.champion)
+      .map((x: ChampionParticipant) => x.champion) ?? []
+    return [...selfChamps, ...otherChamps]
+  }
+  return []
+}
+
+async function selectChampion (champion: Champion) {
+  if (selectedParticipant.value && selectedMatch.value) {
+    const newMatch = await this.$database.selectChampion(selectedSeasonId.value,
+      selectedMatchId.value,
+      selectedParticipant.value.id,
+      champion)
+    if (selectedSeason.value) {
+      selectedSeason.value.matches.find((x: Match) => x.id === newMatch.id)!.champions = newMatch.champions
     }
   }
-})
+}
+
+function notify (message: string) {
+  this.notification = message
+}
 </script>
 
 <style lang="scss">

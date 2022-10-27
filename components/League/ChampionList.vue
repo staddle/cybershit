@@ -54,75 +54,79 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup>
 import { Champion } from '~/model/Champion'
 import { Role } from '~/model/Season'
-declare type RoleTypes = keyof typeof Role
 
-export default Vue.extend({
-  name: 'ChampionList',
-  props: {
-    notChampions: {
-      type: Array as () => Champion[],
-      required: false,
-      default: () => []
-    }
-  },
-  data () {
-    return {
-      champions: [] as Champion[],
-      selectedRole: null as Role | null,
-      query: '',
-      check: false,
-      checkRandom: false,
-      preSelectedChamp: null as Champion | null
-    }
-  },
-  async mounted () {
-    this.champions = await this.$database.getChampionList()
-  },
-  methods: {
-    isPlayable (champ: Champion) : boolean {
-      return this.notChampions.length > 0 ? this.notChampions.find(c => c.key === champ.key) !== undefined : false
-    },
-    randomChampion () : void {
-      const notChampions = this.notChampions.map(c => c.key)
-      const champions = this.champions.filter(c => notChampions.includes(c.key) === false &&
-        (this.selectedRole === null || c.roles.includes(this.selectedRole)))
-      const randomChampion = champions[Math.floor(Math.random() * champions.length)]
-      this.$emit('select-champion', randomChampion)
-    },
-    roles () : number[] {
-      return [Role.TOP, Role.JUNGLE, Role.MID, Role.BOT, Role.SUPPORT]
-    },
-    selectRole (roleString : number) : void {
-      const role : Role = Role[Role[roleString] as RoleTypes]
-      this.selectedRole = role === this.selectedRole ? null : role
-    },
-    displayChampion (champ: Champion) : boolean {
-      if (this.query.length > 0 && !(
-        champ.name.toLowerCase().includes(this.query.toLowerCase()) ||
-        champ.id.toLowerCase().includes(this.query.toLowerCase()) ||
-        champ.name.toLowerCase().replace(/\s/g, '').includes(this.query.toLowerCase()))
-      ) {
-        return false
-      }
-      if (champ.roles) {
-        return this.selectedRole != null ? champ.roles.includes(this.selectedRole) : true
-      } else {
-        // console.log(champ.id + ' has no roles')
-        return true
-      }
-    },
-    selectChampion (champ: Champion) : void {
-      this.$emit('select-champion', champ)
-    },
-    roleDisplayName (role : Role) : string {
-      return Role[role].charAt(0).toUpperCase() + Role[role].slice(1).toLowerCase()
-    }
-  }
+export interface Props {
+  notChampions?: Champion[]
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  notChampions: () => [] as Champion[]
 })
+
+const { notChampions } = toRefs(props)
+
+const emit = defineEmits<{
+  (e: 'select-champion', champ: Champion): void
+}>()
+
+const champions = ref<Champion[]>([])
+const selectedRole = ref<Role>(null)
+const query = ref('')
+const check = ref(false)
+const checkRandom = ref(false)
+const preSelectedChamp = ref<Champion>(null)
+
+const { $database } = useNuxtApp()
+
+champions.value = await $database().getChampionList()
+
+function isPlayable (champ: Champion) : boolean {
+  return notChampions.value.length > 0 ? notChampions.value.find(c => c.key === champ.key) !== undefined : false
+}
+
+function randomChampion () : void {
+  const notChampionsMapped = notChampions.value.map(c => c.key)
+  const championsFiltered = champions.value.filter(c => notChampionsMapped.includes(c.key) === false &&
+    (selectedRole.value === null || c.roles.includes(selectedRole.value)))
+  const randomChampion = championsFiltered[Math.floor(Math.random() * championsFiltered.length)]
+  emit('select-champion', randomChampion)
+}
+
+function roles () : number[] {
+  return [Role.TOP, Role.JUNGLE, Role.MID, Role.BOT, Role.SUPPORT]
+}
+
+function selectRole (roleString : number) : void {
+  const role : Role = Role[Role[roleString] as (keyof typeof Role)]
+  selectedRole.value = role === selectedRole.value ? null : role
+}
+
+function displayChampion (champ: Champion) : boolean {
+  if (query.value.length > 0 && !(
+    champ.name.toLowerCase().includes(query.value.toLowerCase()) ||
+    champ.id.toLowerCase().includes(query.value.toLowerCase()) ||
+    champ.name.toLowerCase().replace(/\s/g, '').includes(query.value.toLowerCase()))
+  ) {
+    return false
+  }
+  if (champ.roles) {
+    return selectedRole.value != null ? champ.roles.includes(selectedRole.value) : true
+  } else {
+    // console.log(champ.id + ' has no roles')
+    return true
+  }
+}
+
+function selectChampion (champ: Champion) : void {
+  emit('select-champion', champ)
+}
+
+function roleDisplayName (role : Role) : string {
+  return Role[role].charAt(0).toUpperCase() + Role[role].slice(1).toLowerCase()
+}
 </script>
 
 <style>

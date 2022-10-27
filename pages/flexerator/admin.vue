@@ -4,18 +4,16 @@
   </div>
 </template>
 
-<script>
-import Vue from 'vue'
+<script lang="ts" setup>
+definePageMeta({
+  layout: 'none'
+})
 
-export default Vue.extend({
-  name: 'LeagueAdminPage',
-  layout: 'none',
-  async mounted () {
-    try {
-      await this.$fire.appCheck.activate('6LcpH_8hAAAAADtqaMfhMoDlujroU70KL2ixcDBa')
-    } catch (e) {
-      // console.error(e)
-    }
+onMounted( async () => {
+  try {
+    await this.$fire.appCheck.activate('6LcpH_8hAAAAADtqaMfhMoDlujroU70KL2ixcDBa')
+  } catch (e) {
+    // console.error(e)
   }
 })
 </script>

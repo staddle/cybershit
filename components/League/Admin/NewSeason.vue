@@ -12,57 +12,52 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-
+<script lang="ts" setup>
 import { Participant, Season } from '~/model/Season'
 
-export default Vue.extend({
-  name: 'LeagueAdminNewSeason',
-  props: {
-    season: {
-      type: Object as () => Season | null,
-      required: false,
-      default: () => undefined
-    },
-    seasonsLength: {
-      type: Number,
-      required: true
-    }
-  },
-  data () {
-    return {
-      name: this.season?.name ?? '',
-      participants: [] as Participant[]
-    }
-  },
-  watch: {
-    season (newVal) {
-      this.name = newVal?.name ?? ''
-    }
-  },
-  mounted: function () {
-    if (this.season) {
-      this.name = this.season.name
-    }
-  },
-  methods: {
-    submit () {
-      this.$emit('season-created', {
-        name: this.name
-      } as Season)
-    },
-    update () {
-      this.$emit('update', {
-        name: this.name,
-        participants: this.participants
-      } as Season)
-    },
-    selectParticipant (p : Participant[]) {
-      this.participants = p
-    }
-  }
+export interface Props {
+  season?: Season,
+  seasonsLength: number,
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  season: null,
 })
+
+const { season, seasonsLength } = toRefs(props)
+
+const name = ref(season.value?.name ?? '')
+const participants = ref<Participant[]>([])
+
+watch(season, (newVal) => {
+  name.value = newVal?.name ?? ''
+})
+
+if (season.value) {
+  name.value = season.value.name
+}
+
+const emit = defineEmits<{
+  (e: 'season-created', s: Season): void,
+  (e: 'update', s: Season): void,
+}>()
+
+function submit () {
+  emit('season-created', {
+    name: this.name
+  } as Season)
+}
+
+function update () {
+  emit('update', {
+    name: name.value,
+    participants: participants.value
+  } as Season)
+}
+
+function selectParticipant (p : Participant[]) {
+  participants.value = p
+}
 </script>
 
 <style>

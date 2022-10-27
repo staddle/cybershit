@@ -34,39 +34,30 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup>
 import { ChampionParticipant, Participant } from '~/model/Season'
 
-export default Vue.extend({
-  name: 'RoleListComponent',
-  props: {
-    participants: {
-      type: Array as () => ChampionParticipant[],
-      required: true
-    },
-    ownParticipant: {
-      type: Object as () => Participant,
-      required: true
-    },
-    state: {
-      type: Boolean,
-      required: false,
-      default: false
+export interface Props {
+  participants: ChampionParticipant[],
+  ownParticipant: Participant,
+  state?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  state: false
+})
+
+const { participants, ownParticipant, state } = toRefs(props)
+
+const participantsSortedByRole = computed(() : ChampionParticipant[] => {
+  return [...participants.value].sort((a: ChampionParticipant, b: ChampionParticipant) => {
+    if (a.role === undefined) {
+      return 1
     }
-  },
-  computed: {
-    participantsSortedByRole () : ChampionParticipant[] {
-      return [...this.participants].sort((a: ChampionParticipant, b: ChampionParticipant) => {
-        if (a.role === undefined) {
-          return 1
-        }
-        if (b.role === undefined) {
-          return -1
-        }
-        return a.role - b.role
-      })
+    if (b.role === undefined) {
+      return -1
     }
-  }
+    return a.role - b.role
+  })
 })
 </script>

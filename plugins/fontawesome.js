@@ -1,5 +1,3 @@
-// For Nuxt 2
-import Vue from 'vue'
 import { library, config } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faAt, faEnvelope, faUser, faPlus, faXmark, faQuestion, faDice, faMagnifyingGlass, faArrowRightToBracket, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
@@ -22,6 +20,6 @@ library.add(faChevronDown)
 library.add(faChevronUp)
 
 // Register the component globally
-Vue.component('FontAwesomeIcon', FontAwesomeIcon)
-
-// Modify nuxt.config.js adding to the `css` and `plugins` sections.
+export default defineNuxtPlugin((nuxtApp) => {
+  nuxtApp.vueApp.component('FontAwesomeIcon', FontAwesomeIcon, {})
+})

@@ -35,64 +35,59 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-
+<script lang="ts" setup>
 import { Participant, Season } from '~/model/Season'
 
-export default Vue.extend({
-  name: 'SelectParticipants',
-  props: {
-    season: {
-      type: Object as () => Season,
-      required: true
-    },
-    allowAddParticipants: {
-      type: Boolean,
+export interface Props {
+    season: Season,
+    allowAddParticipants?: boolean,
+    maxParticipants?: number,
       required: false,
-      default: false
-    },
-    maxParticipants: {
-      type: Number,
-      required: false,
-      default: 0
-    }
-  },
-  data () {
-    return {
-      availableParticipants: [] as Participant[],
-      participantName: '',
-      addingParticipant: false,
-      participants: []
-    }
-  },
-  watch: {
-    participants (newVal) {
-      const p = this.availableParticipants.filter((p : Participant) => newVal.includes(p.id))
-      if (this.maxParticipants !== 0 && p.length > this.maxParticipants) {
-        this.$emit('notify', `You can't select more than ${this.maxParticipants} participants!`)
-      } else {
-        this.$emit('participant-selected', p)
-      }
-    }
-  },
-  mounted () {
-    this.refreshParticipants()
-  },
-  methods: {
-    pushParticipant (name: string) {
-      this.$database.addParticipant(name)
-      this.participantName = ''
-      this.refreshParticipants()
-      this.addingParticipant = false
-    },
-    refreshParticipants () {
-      this.$database.getParticipants().then((participants : Participant[]) => {
-        this.availableParticipants = participants
-      })
-    }
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  allowAddParticipants: false,
+  maxParticipants: 0,
+})
+
+const { season, allowAddParticipants, maxParticipants } = toRefs(props)
+
+const availableParticipants = ref<Participant[]>([])
+const participantName = ref('')
+const addingParticipant = ref(false)
+const participants = ref<string[]>([])
+
+const emit = defineEmits<{
+  (e: 'participant-selected', p: Participant[]): void,
+  (e: 'participant-added', p: Participant): void,
+  (e: 'notify', m: string): void
+}>()
+
+watch(participants, (newVal: string[]) => {
+  const p = availableParticipants.value.filter((p : Participant) => newVal.includes(p.id))
+  if (maxParticipants.value !== 0 && p.length > maxParticipants.value) {
+    emit('notify', `You can't select more than ${maxParticipants.value} participants!`)
+  } else {
+    emit('participant-selected', p)
   }
 })
+
+refreshParticipants()
+
+const { $database } = useNuxtApp()
+
+function pushParticipant (name: string) {
+  $database().addParticipant(name)
+  participantName.value = ''
+  refreshParticipants()
+  addingParticipant.value = false
+}
+
+function refreshParticipants () {
+  $database().getParticipants().then((participants : Participant[]) => {
+    availableParticipants.value = participants
+  })
+}
 </script>
 
 <style>
