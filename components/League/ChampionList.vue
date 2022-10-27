@@ -79,9 +79,9 @@ const check = ref(false)
 const checkRandom = ref(false)
 const preSelectedChamp = ref<Champion>(null)
 
-const { $database } = useNuxtApp()
+const { $getChampionList } = useNuxtApp()
 
-champions.value = await $database().getChampionList()
+champions.value = await $getChampionList()
 
 function isPlayable (champ: Champion) : boolean {
   return notChampions.value.length > 0 ? notChampions.value.find(c => c.key === champ.key) !== undefined : false

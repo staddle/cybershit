@@ -2,7 +2,6 @@
   "fb": {
     "apiKey": "AIzaSyAkXIA6YTU0YjoVfFobX9a28AgzP_4Sgmk",
     "authDomain": "cybershit.firebaseapp.com",
-    "databaseURL": "https://cybershit-default-rtdb.europe-west1.firebasedatabase.app",
     "projectId": "cybershit",
     "storageBucket": "cybershit.appspot.com",
     "messagingSenderId": "1055173805125",
@@ -14,5 +13,6 @@
     "mode": "base",
     "siteKey": "6LcpH_8hAAAAADtqaMfhMoDlujroU70KL2ixcDBa",
     "version": 3
-  }
+  },
+  "databaseURL": "https://cybershit-default-rtdb.europe-west1.firebasedatabase.app"
 }

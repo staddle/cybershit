@@ -90,12 +90,12 @@ const selectedChampion = computed((): Champion | undefined => {
 })
 
 //mounted
-refreshSeasons()
+onMounted(() => refreshSeasons())
 
-const { $database } = useNuxtApp()
+const { $getSeasons, $listenForSeason, $rollRoles, $selectChampion } = useNuxtApp()
 
 function refreshSeasons () {
-  $database().getSeasons().then((seasonsReturn: Season[]) => {
+  $getSeasons().then((seasonsReturn: Season[]) => {
     seasons.value = seasonsReturn
     loading.value = false
   })
@@ -103,7 +103,11 @@ function refreshSeasons () {
 
 function setSelectedSeason (seasonId: string) {
   selectedSeasonId.value = seasonId
-  $database().listenForSeason(seasonId, (season: Season) => this.setSeasonInSeasons(season))
+  $listenForSeason(seasonId, (season: Season) => setSeasonInSeasons(season))
+}
+
+function setSeasonInSeasons (season: Season) {
+  seasons.value = seasons.value.map((x: Season) => x.id === season.id ? season : x)
 }
 
 function setSelectedMatch (matchId: string) {
@@ -112,7 +116,7 @@ function setSelectedMatch (matchId: string) {
 
 function rollRoles () {
   if (createdState.value) {
-    $database().rollRoles(selectedSeasonId.value, selectedMatchId.value)
+    $rollRoles(selectedSeasonId.value, selectedMatchId.value)
   }
 }
 
@@ -132,7 +136,7 @@ function championsThatParticipantsHavePlayed (): Champion[] {
 
 async function selectChampion (champion: Champion) {
   if (selectedParticipant.value && selectedMatch.value) {
-    const newMatch = await this.$database.selectChampion(selectedSeasonId.value,
+    const newMatch = await $selectChampion(selectedSeasonId.value,
       selectedMatchId.value,
       selectedParticipant.value.id,
       champion)
@@ -143,7 +147,7 @@ async function selectChampion (champion: Champion) {
 }
 
 function notify (message: string) {
-  this.notification = message
+  notification.value = message
 }
 </script>
 

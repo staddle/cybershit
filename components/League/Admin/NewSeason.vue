@@ -44,7 +44,7 @@ const emit = defineEmits<{
 
 function submit () {
   emit('season-created', {
-    name: this.name
+    name: name.value
   } as Season)
 }
 

@@ -52,12 +52,12 @@ watch(selectedSeasonIndex, (val) => {
   }
 })
 
-refreshSeasons()
+onMounted(() => refreshSeasons())
 
-const { $database } = useNuxtApp()
+const { $getSeasons, $addSeason } = useNuxtApp()
 
 function refreshSeasons () {
-  $database().getSeasons().then((seasonsRet: Season[]) => {
+  $getSeasons().then((seasonsRet: Season[]) => {
     loading.value = false
     seasons.value = seasonsRet
     if (seasons.value && seasons.value.length > 0) {
@@ -67,7 +67,7 @@ function refreshSeasons () {
 }
 
 function seasonAdded (newSeason : Season) {
-  const newId = $database().addSeason(newSeason)
+  const newId = $addSeason(newSeason)
   refreshSeasons()
   selectedSeasonIndex.value = newId
 }

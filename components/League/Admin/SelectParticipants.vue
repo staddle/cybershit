@@ -74,17 +74,17 @@ watch(participants, (newVal: string[]) => {
 
 refreshParticipants()
 
-const { $database } = useNuxtApp()
+const { $addParticipant, $getParticipants } = useNuxtApp()
 
 function pushParticipant (name: string) {
-  $database().addParticipant(name)
+  $addParticipant(name)
   participantName.value = ''
   refreshParticipants()
   addingParticipant.value = false
 }
 
 function refreshParticipants () {
-  $database().getParticipants().then((participants : Participant[]) => {
+  $getParticipants().then((participants : Participant[]) => {
     availableParticipants.value = participants
   })
 }

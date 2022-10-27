@@ -1,6 +1,6 @@
 <template>
   <div v-if="role != undefined">
-    <img :src="require(`~/assets/img/${roleName}.webp`)" :alt="roleName" :width="width" :height="height">
+    <img :src="getImageUrl(roleName)" :alt="roleName" :width="width" :height="height">
   </div>
   <FontAwesomeIcon v-else icon="x" />
 </template>
@@ -21,8 +21,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { role, width, height } = toRefs(props)
 
-width.value = width.value ?? 32
-height.value = height.value ?? 32
+const getImageUrl = (roleName) => {
+  return new URL(`../../assets/img/${roleName}.webp`, import.meta.url).href
+}
 
 const roleName = computed(() =>  Role[role.value])
 </script>

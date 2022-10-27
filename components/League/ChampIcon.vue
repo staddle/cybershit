@@ -1,10 +1,10 @@
 <template>
   <div>
     <img
-      :src="require(`~/assets/img/champion/${champ.id}.png`)"
-      :alt="`${champ.name} icon`"
       :width="width"
       :height="height"
+      :src="getImageUrl(champ.id)"
+      :alt="`${champ.name} icon`"
       class="border border-slate-800"
       :class="{'grayscale': notPlayable, 'cursor-pointer hover:border-violet-600 transition-all duration-75': clickable}"
       @click.prevent="select()"
@@ -18,27 +18,36 @@ import { Champion } from '~/model/Champion'
 
 export interface Props {
     champ: Champion,
+    width?: number,
+    height?: number,
     notPlayable?: boolean,
-    width?: string,
-    height?: string,
     clickable?: boolean,
 }
 
 const props = withDefaults(defineProps<Props>(), {
+    width: 50,
+    height: 50,
     notPlayable: false,
-    width: '50px',
-    height: '50px',
     clickable: true
 })
 
-const { champ, notPlayable, width, height, clickable } = toRefs(props)
+const { notPlayable, clickable } = toRefs(props)
+
+const emit = defineEmits<{
+    (e: 'select-champion'): void,
+    (e: 'notify', message: string): void
+}>()
+
+const getImageUrl = (id) => {
+  return new URL(`../../assets/img/champion/${id}.png`, import.meta.url).href
+}
 
 function select () {
-  if (this.clickable) {
-    if (this.notPlayable) {
-      this.$emit('notify', 'You already played this champion previously or someone else picked it.')
+  if (clickable.value) {
+    if (notPlayable.value) {
+      emit('notify', 'You already played this champion previously or someone else picked it.')
     } else {
-      this.$emit('select-champion')
+      emit('select-champion')
     }
   }
 }

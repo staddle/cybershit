@@ -82,8 +82,8 @@
             <LeagueChampIcon
               :champ="champ.champ"
               :clickable="false"
-              height="32"
-              width="32"
+              :height="32"
+              :width="32"
               class="px-1"
             />
           </div>
@@ -184,10 +184,13 @@ watch(selectedMatch, (newMatch) => {
 })
 
 //mounted
-if (seasons.value.length === 1) {
-  selectedSeason.value = seasons.value[0].id
-}
-getLocalStorage()
+onMounted(() => {
+  if (seasons.value.length === 1) {
+    selectedSeason.value = seasons.value[0].id
+  }
+  getLocalStorage()
+})
+const { $addMatch } = useNuxtApp()
 
 //methods
 function setParticipants (participants: Participant[]) {
@@ -198,7 +201,7 @@ function getLocalStorage () {
   const lS = localStorage.getItem('selectedParticipant')
   if (lS) {
     selectedParticipant.value = lS?.toString() ?? ''
-    emit('participant-selected', this.players.find((x: Participant) => x.name === this.selectedParticipant))
+    emit('participant-selected', players.value.find((x: Participant) => x.name === selectedParticipant.value))
   }
 }
 
@@ -206,8 +209,8 @@ function addMatch () {
   if (selectedSeasonObject.value && playersForMatch.value.length > 0) {
     const newMatch : Match = {
       id: '',
-      name: this.name,
-      champions: this.playersForMatch.map((p) => {
+      name: name.value,
+      champions: playersForMatch.value.map((p) => {
         return {
           champion: null as Champion | null,
           participant: p
@@ -216,10 +219,10 @@ function addMatch () {
       date: (Number)(new Date()),
       state: MatchState.CREATED
     }
-    const newId = this.$database.addMatch(newMatch, this.selectedSeasonObject.id)
-    this.selectedMatch = newId
-    this.name = ''
-    this.addingMatch = false
+    const newId = $addMatch(newMatch, selectedSeasonObject.value.id)
+    selectedMatch.value = newId
+    name.value = ''
+    addingMatch.value = false
   } else {
     alert('Please select a season and at least one player')
   }
