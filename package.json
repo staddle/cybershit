@@ -21,7 +21,7 @@
     "core-js": "^3.25.2",
     "firebase": "^9.14.0",
     "nuxt": "^2.15.8",
-    "sass": "^1.56.0",
+    "sass": "^1.56.2",
     "vue": "^2.7.14",
     "vue-server-renderer": "^2.7.10",
     "vue-template-compiler": "^2.7.14",
